@@ -9,7 +9,9 @@ data class OpenWeather(val time:String, val sost:String){
                 OpenWeather("13:00","Снег"),
                 OpenWeather("14:00","Град"),
                 OpenWeather("15:00","Солнечно"),
-                OpenWeather("16:00","Туман")
+                OpenWeather("16:00","Туман"),
+                OpenWeather("17:00", "Снег с дождем")
+
             )
         }
     }
