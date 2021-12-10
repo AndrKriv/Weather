@@ -53,10 +53,13 @@ dependencies {
     //implementation 'com.arello-mobile:moxy:0.4.2'
     //implementation 'com.arello-mobile:moxy-android:0.4.2'
     //annotationProcessor 'com.arello-mobile:moxy-compiler:0.4.2'
+
     //RX
-    implementation 'io.reactivex:rxjava:1.1.0'
-    implementation 'io.reactivex:rxandroid:1.1.0'
-    implementation "org.jetbrains.anko:anko:0.10.7"
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
+    //coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC'
 
 
 }

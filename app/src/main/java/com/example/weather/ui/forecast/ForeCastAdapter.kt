@@ -3,26 +3,37 @@ package com.example.weather.ui.forecast
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+
+import com.example.weather.OWM.ImageChecker
 import com.example.weather.R
 
 
-class ForeCastAdapter(
-    private val owList: List<OpenWeather>
-) : RecyclerView.Adapter<ForeCastAdapter.ForecastViewHolder>() {
+class ForecastAdapter(
+    private val owList: ArrayList<ForecastInfo>
+) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
 
     class ForecastViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
-        private val time: TextView = itemView.findViewById(R.id.item_time)
-        private val sost: TextView = itemView.findViewById(R.id.item_weath_sost)
+         val time: TextView = itemView.findViewById(R.id.time_tv)
+         val description: TextView = itemView.findViewById(R.id.description_tv)
+         val degrees: TextView = itemView.findViewById(R.id.degrees_tv)
+         val wth_img:ImageView = itemView.findViewById(R.id.weather_img)
 
-        fun bind(ow: OpenWeather) {
-            time.text = ow.time
-            sost.text = ow.sost
-        }
+//        fun bind(ow: ForecastInfo) {
+//                time.text = ow.time
+//                description.text = ow.description
+//                degrees.text = ow.degrees
+//            ow.description?.let { ImageChecker.image_weather(it) }?.let {
+//                wth_img.setImageResource(
+//                    it
+//                )
+//            }
+//        }
     }
 
     override fun onCreateViewHolder(
@@ -39,8 +50,16 @@ class ForeCastAdapter(
     }
 
     override fun onBindViewHolder(holder: ForecastViewHolder, position: Int) {
-        val ow: OpenWeather = owList[position]
-        holder.bind(ow)
+        //val ow = ForecastInfo()
+        //holder.bind()=ow[position]
+        holder.time.text=owList[position].time
+        holder.degrees.text =owList[position].degrees
+        holder.description.text =owList[position].description
+        owList[position].description.let {
+            ImageChecker.image_weather(
+                it
+            )
+        }.let { holder.wth_img.setImageResource(it) }
     }
 
     override fun getItemCount() = owList.size
