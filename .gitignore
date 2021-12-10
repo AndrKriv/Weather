@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+.idea/deploymentTargetDropDown.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/misc.xml
+app/src/main/java/com/example/weather/ui/forecast/OpenWeather.kt

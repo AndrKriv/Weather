@@ -3,16 +3,25 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Innowise/weather/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.21041666666666667" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/drawable/cloud.xml" value="0.17604166666666668" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/drawable/ic_cloud_24.xml" value="0.23981481481481481" />
         <entry key="..\:/Innowise/weather/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.19114583333333332" />
         <entry key="..\:/Innowise/weather/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.19114583333333332" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2740740740740741" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/drawable/sun.xml" value="0.23981481481481481" />
         <entry key="..\:/Innowise/weather/app/src/main/res/layout/activity_bottom.xml" value="0.10400000000000001" />
         <entry key="..\:/Innowise/weather/app/src/main/res/layout/activity_main.xml" value="0.22708333333333333" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/layout/check.xml" value="0.15989583333333332" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/layout/check_weather.xml" value="0.1" />
         <entry key="..\:/Innowise/weather/app/src/main/res/layout/fragment_dashboard.xml" value="0.175" />
         <entry key="..\:/Innowise/weather/app/src/main/res/layout/fragment_forecast.xml" value="0.16770833333333332" />
         <entry key="..\:/Innowise/weather/app/src/main/res/layout/fragment_home.xml" value="0.175" />
         <entry key="..\:/Innowise/weather/app/src/main/res/layout/fragment_today.xml" value="0.17447916666666666" />
-        <entry key="..\:/Innowise/weather/app/src/main/res/layout/item_forecast.xml" value="0.2644927536231884" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/layout/item_forecast.xml" value="0.2" />
         <entry key="..\:/Innowise/weather/app/src/main/res/menu/bottom_nav_menu.xml" value="0.175" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2740740740740741" />
+        <entry key="..\:/Innowise/weather/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2740740740740741" />
       </map>
     </option>
   </component>
