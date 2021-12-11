@@ -22,7 +22,7 @@ class ForecastAdapter(
          val time: TextView = itemView.findViewById(R.id.time_tv)
          val description: TextView = itemView.findViewById(R.id.description_tv)
          val degrees: TextView = itemView.findViewById(R.id.degrees_tv)
-         val wth_img:ImageView = itemView.findViewById(R.id.weather_img)
+         val wthImg:ImageView = itemView.findViewById(R.id.weather_img)
 
 //        fun bind(ow: ForecastInfo) {
 //                time.text = ow.time
@@ -56,10 +56,10 @@ class ForecastAdapter(
         holder.degrees.text =owList[position].degrees
         holder.description.text =owList[position].description
         owList[position].description.let {
-            ImageChecker.image_weather(
+            ImageChecker.imageWeather(
                 it
             )
-        }.let { holder.wth_img.setImageResource(it) }
+        }.let { holder.wthImg.setImageResource(it) }
     }
 
     override fun getItemCount() = owList.size

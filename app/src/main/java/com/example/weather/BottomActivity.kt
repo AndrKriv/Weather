@@ -1,15 +1,18 @@
 package com.example.weather
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.connection.CheckConnection
 import com.example.weather.databinding.ActivityBottomBinding
+import com.example.weather.share.ShareText
 
 class BottomActivity : AppCompatActivity() {
 
@@ -28,6 +31,7 @@ class BottomActivity : AppCompatActivity() {
             navView.setupWithNavController(navController)
         }
         else Toast.makeText(this,"Проверьте Ваше интернет-соединение!",Toast.LENGTH_SHORT).show()
+
 
     }
 }

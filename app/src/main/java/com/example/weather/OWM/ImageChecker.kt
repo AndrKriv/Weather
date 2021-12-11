@@ -6,8 +6,8 @@ import android.widget.Toast
 import com.example.weather.R
 
 object ImageChecker{
-    fun image_weather(string_checker:String):Int{
-        return when(string_checker) {
+    fun imageWeather(stringChecker:String):Int{
+        return when(stringChecker) {
             "ясно" -> R.drawable.sun
             "пасмурно" -> R.drawable.cloudy
             "облачно с прояснениями" -> R.drawable.cloud_sun

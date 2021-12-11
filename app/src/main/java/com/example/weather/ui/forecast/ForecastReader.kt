@@ -11,8 +11,7 @@ object ForecastReader {
         runBlocking(Dispatchers.IO) {
             val city: String = "London"
             val key: String = "0cb9d40b9e13129cc06ee1089c96d455"
-            val url =
-                "https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$key&units=metric&lang=ru"
+            val url = "https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$key&units=metric&lang=ru"
             val api = URL(url).readText()
             val weath = JSONObject(api).getJSONArray("list")
             val count =  JSONObject(api).getInt("cnt")
