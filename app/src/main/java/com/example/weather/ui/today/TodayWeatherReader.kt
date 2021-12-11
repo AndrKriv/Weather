@@ -23,25 +23,23 @@ open class TodayWeatherReader() {
             val api = URL(url).readText()
 
             val weath = JSONObject(api).getJSONArray("weather")
-            val sky = weath.getJSONObject(0).getString("description")
+            val description = weath.getJSONObject(0).getString("description")
 
             val main = JSONObject(api).getJSONObject("main")
             val temp = main.getString("temp")
 
-            val set_rise = JSONObject(api).getJSONObject("sys")
+            val setRise = JSONObject(api).getJSONObject("sys")
 
-            val start_sec = set_rise.getInt("sunrise")
-            val last_sec = set_rise.getInt("sunset")
+            val startSec = setRise.getInt("sunrise")
+            val lastSec = setRise.getInt("sunset")
 
-            val time_of_the_day = last_sec - start_sec
-            val hour_time_of_the_day: Int = time_of_the_day / 3600
-            val min_time_of_the_day: Int = (time_of_the_day % 3600) / 60
+            val timeOfTheDay = lastSec - startSec
+            val hourTimeOfTheDay: Int = timeOfTheDay / 3600
+            val minTimeOfTheDay: Int = (timeOfTheDay % 3600) / 60
 
-            val only_date = SimpleDateFormat("dd.MM.yyyy")
-            val only_time = SimpleDateFormat("HH:mm")
-            val only_date_ = only_date.format(Date())
-            val only_time_ = only_time.format(Date())
-            subscriber.onNext(listOf("$city", "$temp",  "$only_date_"))
+            val onlyDate = SimpleDateFormat("dd.MM.yyyy").format(Date())
+            val onlyTime = SimpleDateFormat("HH:mm").format(Date())
+            subscriber.onNext(listOf(city, temp, description, onlyTime+" "+onlyDate))
         }
     }
 
