@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
@@ -17,6 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -32,11 +34,11 @@ import java.util.*
 class BottomActivity : AppCompatActivity() {
     var string:String?=""
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
-    private val INTERVAL: Long = 2000
-    private val FASTEST_INTERVAL: Long = 1000
+    //private val INTERVAL: Long = 50000
+    //private val FASTEST_INTERVAL: Long = 50000
     lateinit var mLastLocation: Location
     internal lateinit var mLocationRequest: LocationRequest
-    private val REQUEST_PERMISSION_LOCATION = 10
+    private val REQUEST_PERMISSION_LOCATION = 1000
 
     private lateinit var binding: ActivityBottomBinding
     val connection = CheckConnection()
@@ -60,7 +62,6 @@ class BottomActivity : AppCompatActivity() {
             navView.setupWithNavController(navController)
         }
         else Toast.makeText(this,"Проверьте Ваше интернет-соединение!",Toast.LENGTH_SHORT).show()
-
     }
 
     override fun onStart() {
@@ -91,31 +92,33 @@ class BottomActivity : AppCompatActivity() {
 
 
     protected fun startLocationUpdates() {
+
         // Create the location request to start receiving updates
-        mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        mLocationRequest!!.setInterval(INTERVAL)
-        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        // mLocationRequest.setInterval(INTERVAL)
+        //  mLocationRequest.setFastestInterval(FASTEST_INTERVAL)
 
         // Create LocationSettingsRequest object using location request
         val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(mLocationRequest!!)
+        builder.addLocationRequest(mLocationRequest)
         val locationSettingsRequest = builder.build()
 
         val settingsClient = LocationServices.getSettingsClient(this)
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
             PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+            PackageManager.PERMISSION_GRANTED) {
             return
         }
-        mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback,
-            Looper.myLooper()!!
-        )
+        Looper.myLooper()?.let {
+            mFusedLocationProviderClient?.requestLocationUpdates(mLocationRequest, mLocationCallback,
+                it
+            )
+        }
     }
 
     private val mLocationCallback = object : LocationCallback() {
@@ -128,9 +131,6 @@ class BottomActivity : AppCompatActivity() {
 
     fun onLocationChanged(location: Location) {
         // New location has now been determined
-
-
-
         mLastLocation = location
         val date: Date = Calendar.getInstance().time
         val sdf = SimpleDateFormat("hh:mm:ss a")
@@ -144,15 +144,15 @@ class BottomActivity : AppCompatActivity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         val myFragment = TodayFragment()
         val bundle = Bundle()
-        bundle.putString("message", mLastLocation.latitude.toString())
+        bundle.putString("lat", mLastLocation.latitude.toString())
+        bundle.putString("lon", mLastLocation.longitude.toString())
         myFragment.arguments = bundle
         fragmentTransaction.add(R.id.tf, myFragment).commit()
         // You can now create a LatLng Object for use with maps
     }
 
     private fun stoplocationUpdates() {
-        mFusedLocationProviderClient!!.removeLocationUpdates(mLocationCallback)
-
+        mFusedLocationProviderClient?.removeLocationUpdates(mLocationCallback)
         Log.d("Crash","Delete upgrading location")
     }
 
@@ -196,6 +196,6 @@ class BottomActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stoplocationUpdates()
-        Log.d("onDestroy","destoy using location")
+        Log.d("onDestroy","destroy using location")
     }
 }

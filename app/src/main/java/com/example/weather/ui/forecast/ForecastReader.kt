@@ -6,9 +6,10 @@ import org.json.JSONObject
 import java.net.URL
 
 object ForecastReader {
-    fun urlForecast(): ArrayList<ForecastInfo> {
+    fun urlForecast(lat:String,lon:String): ArrayList<ForecastInfo> {
         var newsList: ArrayList<ForecastInfo> = ArrayList<ForecastInfo>()
         runBlocking(Dispatchers.IO) {
+
             val city: String = "London"
             val key: String = "0cb9d40b9e13129cc06ee1089c96d455"
             val url = "https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$key&units=metric&lang=ru"
@@ -24,8 +25,6 @@ object ForecastReader {
                 val time = weath.getJSONObject(i).getString("dt_txt")
 
                 newsList.add(ForecastInfo(time,description,degrees+"°С"))
-
-                //Log.d("MYU", "${newsList[i]} + $i")
 
             }
         }
