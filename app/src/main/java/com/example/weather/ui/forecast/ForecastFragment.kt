@@ -10,24 +10,25 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
+import com.example.weather.ui.today.TodayFragment
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.net.URL
 
 class ForecastFragment : Fragment() {
-    var lat=""
-    var lon=""
+    var lat="50"
+    var lon="30"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val bundle:Bundle? = arguments
-        val message1 = bundle?.getString("lat")
-        val message2 = bundle?.getString("lon")
-        lat = message1.toString()
-        lon = message2.toString()
+//        val bundle:Bundle? = arguments
+//        val message1 = bundle?.getString("lat")
+//        val message2 = bundle?.getString("lon")
+//        lat = message1.toString()
+//        lon = message2.toString()
         val view: View = inflater.inflate(R.layout.fragment_forecast, container, false)
 
         // Inflate the layout for this fragment
@@ -35,7 +36,7 @@ class ForecastFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val newsList: ArrayList<ForecastInfo> = ForecastReader.urlForecast(lat, lon)
+        val newsList: ArrayList<ForecastInfo> = urlForecast(lat, lon)
         super.onViewCreated(view, savedInstanceState)
         val recyclerView: RecyclerView? = view.findViewById(R.id.forecast_recycler_view)
         recyclerView?.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
@@ -48,5 +49,5 @@ class ForecastFragment : Fragment() {
        //_binding = null
     }
 
-
+    fun newInstance() = ForecastFragment()
 }

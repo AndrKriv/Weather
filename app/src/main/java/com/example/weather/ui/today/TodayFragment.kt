@@ -1,6 +1,5 @@
 package com.example.weather.ui.today
 
-import android.R.attr
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,17 +9,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
-import com.example.weather.BottomActivity
 import com.example.weather.OWM.ImageChecker
 import com.example.weather.R
 import com.example.weather.share.ShareText
 import com.example.weather.share.createSharingString
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import android.R.attr.rating
 import android.content.Context
 
 class TodayFragment : Fragment() {
@@ -58,6 +53,9 @@ class TodayFragment : Fragment() {
         val btnCheck = view.findViewById<Button>(R.id.share)
         val ivDescr = view.findViewById<ImageView>(R.id.iv_img)
 
+
+        val str1 = savedInstanceState?.getString("lat").toString()
+        val str2 = savedInstanceState?.getString("lon").toString()
 //        val bundle = arguments
 //        val message1 = bundle?.getString("lat")
 //        val lat1 = message1.toString()
@@ -66,7 +64,7 @@ class TodayFragment : Fragment() {
 
         Log.d("RTY",savedInstanceState?.getString("lat").toString())
         val dispose = if(savedInstanceState!=null)
-        {urlTodayWeather(savedInstanceState.getString(lat).toString(),savedInstanceState.getString(lon).toString())}
+        {urlTodayWeather(savedInstanceState?.getString(str1).toString(),savedInstanceState?.getString(str2).toString())}
         else{urlTodayWeather(lat,lon)}
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
@@ -101,9 +99,8 @@ class TodayFragment : Fragment() {
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         Log.d("WSWS","onSaveInstanceState")
         super.onSaveInstanceState(savedInstanceState)
-        savedInstanceState.putString("lat", lat)
-        savedInstanceState.putString("lon", lon)
-        Log.d("ONIS",lat)
+//        savedInstanceState.putString("lat", lat)
+//        savedInstanceState.putString("lon", lon)
     }
 
     override fun onDestroyView() {
@@ -114,8 +111,6 @@ class TodayFragment : Fragment() {
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         Log.d("WSWS","onViewStateRestored")
         super.onViewStateRestored(savedInstanceState)
-        lat = savedInstanceState?.getString("lat").toString()
-        lon = savedInstanceState?.getString("lon").toString()
     }
-
+    fun newInstance() = TodayFragment()
 }

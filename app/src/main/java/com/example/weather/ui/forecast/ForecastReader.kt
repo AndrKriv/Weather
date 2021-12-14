@@ -5,7 +5,6 @@ import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import java.net.URL
 
-object ForecastReader {
     fun urlForecast(lat:String,lon:String): ArrayList<ForecastInfo> {
         var newsList: ArrayList<ForecastInfo> = ArrayList<ForecastInfo>()
         runBlocking(Dispatchers.IO) {
@@ -13,7 +12,8 @@ object ForecastReader {
             val city: String = "London"
             val key: String = "0cb9d40b9e13129cc06ee1089c96d455"
             val url = "https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$key&units=metric&lang=ru"
-            val api = URL(url).readText()
+            val newURL: String = "https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=$key&units=metric&lang=ru"
+            val api = URL(newURL).readText()
             val weath = JSONObject(api).getJSONArray("list")
             val count =  JSONObject(api).getInt("cnt")
 
@@ -30,5 +30,3 @@ object ForecastReader {
         }
         return newsList
     }
-
-}
