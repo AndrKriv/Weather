@@ -1,5 +1,7 @@
 package com.example.weather.ui.forecast
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,9 +18,8 @@ import org.json.JSONObject
 import java.net.URL
 
 class ForecastFragment : Fragment() {
-    var lat="50"
-    var lon="30"
-
+    var lat=""
+    var lon=""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,12 +31,14 @@ class ForecastFragment : Fragment() {
 //        lat = message1.toString()
 //        lon = message2.toString()
         val view: View = inflater.inflate(R.layout.fragment_forecast, container, false)
-
         // Inflate the layout for this fragment
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        var f: SharedPreferences? = this.getActivity()?.getSharedPreferences("pref", Context.MODE_PRIVATE)
+        lat = f?.getString("lat",null).toString()
+        lon = f?.getString("lon",null).toString()
         val newsList: ArrayList<ForecastInfo> = urlForecast(lat, lon)
         super.onViewCreated(view, savedInstanceState)
         val recyclerView: RecyclerView? = view.findViewById(R.id.forecast_recycler_view)
@@ -46,8 +49,5 @@ class ForecastFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-       //_binding = null
     }
-
-    fun newInstance() = ForecastFragment()
 }

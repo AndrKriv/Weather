@@ -17,6 +17,10 @@ import com.example.weather.share.createSharingString
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import com.example.weather.BottomActivity
 
 class TodayFragment : Fragment() {
     var lat = ""
@@ -24,24 +28,23 @@ class TodayFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        val bundle:Bundle? = arguments
-        val message1 = bundle?.getString("lat")
-        val message2 = bundle?.getString("lon")
-        lat = message1.toString()
-        lon = message2.toString()
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("WSWS","onCreate")
         super.onCreate(savedInstanceState)
-        retainInstance = true
-
+        arguments?.let { args ->
+            lat = args.getString("lat").toString()
+            lon = args.getString("lon").toString()
+        }
+        //retainInstance = true
     }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         Log.d("WSWS","onCreateView")
 
         var str:String = ""
@@ -62,9 +65,28 @@ class TodayFragment : Fragment() {
 //        val message2 = bundle?.getString("lon")
 //        val lon1 = message2.toString()
 
-        Log.d("RTY",savedInstanceState?.getString("lat").toString())
+
+//        val bundle:Bundle? = arguments
+//        val message1 = bundle?.getString("lat")
+//        val message2 = bundle?.getString("lon")
+//        lat = message1.toString()
+//        lon = message2.toString()
+
+        //val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
+        //val defaultValue = resources.getInteger(R.integer.saved_high_score_default_key)
+        //val highScore = sharedPref?.getInt(getString(R.string.saved_high_score_key), defaultValue)
+
+
+
+        var f: SharedPreferences? = this.getActivity()?.getSharedPreferences("pref", Context.MODE_PRIVATE)
+        lat = f?.getString("lat",null).toString()
+        lon = f?.getString("lon",null).toString()
+
+        Log.d("RTY",savedInstanceState?.getString(str1).toString())
+        Log.d("RTY2",lat)
+        Log.d("RTY2",lon)
         val dispose = if(savedInstanceState!=null)
-        {urlTodayWeather(savedInstanceState?.getString(str1).toString(),savedInstanceState?.getString(str2).toString())}
+        {urlTodayWeather(savedInstanceState.getString(str1).toString(),savedInstanceState.getString(str2).toString())}
         else{urlTodayWeather(lat,lon)}
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
@@ -99,8 +121,6 @@ class TodayFragment : Fragment() {
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         Log.d("WSWS","onSaveInstanceState")
         super.onSaveInstanceState(savedInstanceState)
-//        savedInstanceState.putString("lat", lat)
-//        savedInstanceState.putString("lon", lon)
     }
 
     override fun onDestroyView() {
@@ -112,5 +132,17 @@ class TodayFragment : Fragment() {
         Log.d("WSWS","onViewStateRestored")
         super.onViewStateRestored(savedInstanceState)
     }
-    fun newInstance() = TodayFragment()
+    companion object {
+        private const val STR_LAT = "lat"
+        private const val STR_LON = "lon"
+        fun newInstance(list1: String,list2: String): TodayFragment {
+            val fragment = TodayFragment()
+            val args = Bundle()
+            args.getString(STR_LAT, list1)
+            args.getString(STR_LON, list2)
+
+            fragment.arguments = args
+            return fragment
+        }
+    }
 }
