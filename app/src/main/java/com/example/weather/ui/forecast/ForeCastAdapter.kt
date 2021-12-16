@@ -24,16 +24,6 @@ class ForecastAdapter(
          val degrees: TextView = itemView.findViewById(R.id.degrees_tv)
          val wthImg:ImageView = itemView.findViewById(R.id.weather_img)
 
-//        fun bind(ow: ForecastInfo) {
-//                time.text = ow.time
-//                description.text = ow.description
-//                degrees.text = ow.degrees
-//            ow.description?.let { ImageChecker.image_weather(it) }?.let {
-//                wth_img.setImageResource(
-//                    it
-//                )
-//            }
-//        }
     }
 
     override fun onCreateViewHolder(

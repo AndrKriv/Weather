@@ -25,6 +25,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.connection.CheckConnection
 import com.example.weather.databinding.ActivityBottomBinding
+import com.example.weather.objects.toAllProject
 import com.example.weather.ui.forecast.ForecastFragment
 import com.example.weather.ui.today.TodayFragment
 import com.google.android.gms.location.*
@@ -35,11 +36,10 @@ import kotlin.reflect.KProperty
 
 class BottomActivity : AppCompatActivity(){
     var string:String?=""
-    val requestCode:Int=11
-    val prefName = "pref"
+
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     internal lateinit var mLocationRequest: LocationRequest
-    private val REQUEST_PERMISSION_LOCATION = 1000
+
     val connection = CheckConnection()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,16 +56,14 @@ class BottomActivity : AppCompatActivity(){
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 buildAlertMessageNoGps()
             }
-            startLocationUpdates()
         }
-        else Toast.makeText(this,"Проверьте Ваше интернет-соединение!",Toast.LENGTH_SHORT).show()
+        else Toast.makeText(this,R.string.connection,Toast.LENGTH_SHORT).show()
     }
 
     override fun onStart() {
         super.onStart()
         if (checkPermissionForLocation(this)) {
-
-            Log.d("onStart","start using location")
+            startLocationUpdates()
         }
     }
 
@@ -77,7 +75,7 @@ class BottomActivity : AppCompatActivity(){
             } else {
                 // Show the permission request
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_PERMISSION_LOCATION)
+                    toAllProject.REQUEST_PERMISSION_LOCATION)
                 false
             }
         } else {
@@ -117,10 +115,10 @@ class BottomActivity : AppCompatActivity(){
     }
 
     fun onLocationChanged(location: Location){
-        val sharedPreference = getSharedPreferences("pref",Context.MODE_PRIVATE)
+        val sharedPreference = getSharedPreferences(toAllProject.prefName,Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
-        editor.putString("lat",location.latitude.toString())
-        editor.putString("lon",location.longitude.toString())
+        editor.putString(toAllProject.latitude,location.latitude.toString())
+        editor.putString(toAllProject.longitude,location.longitude.toString())
         editor.apply()
     }
 
@@ -129,11 +127,11 @@ class BottomActivity : AppCompatActivity(){
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_PERMISSION_LOCATION) {
+        if (requestCode == toAllProject.REQUEST_PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {// доступ к gps разрешен, открываем локацию (пункт настроек)
                 startLocationUpdates()
             } else {
-                Toast.makeText(this@BottomActivity, "Доступ запрещён", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@BottomActivity, R.string.denied, Toast.LENGTH_SHORT).show()
             }
         }else
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -141,14 +139,14 @@ class BottomActivity : AppCompatActivity(){
 
     fun buildAlertMessageNoGps() {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("Ваша геолокация выключена.\nВключить?")
+        builder.setMessage(R.string.location)
             .setCancelable(false)
-            .setPositiveButton("Да") { dialog, id ->
+            .setPositiveButton(R.string.yes) { dialog, id ->
                 startActivityForResult(
                     Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    , 11)
+                    ,toAllProject.requestCode)
             }
-            .setNegativeButton("Нет") { dialog, id ->
+            .setNegativeButton(R.string.no) { dialog, id ->
                 dialog.cancel()
                 finish()
             }
@@ -159,6 +157,5 @@ class BottomActivity : AppCompatActivity(){
     override fun onDestroy() {
         super.onDestroy()
         stopLocationUpdates()
-        Log.d("onDestroy","destroy using location")
     }
 }

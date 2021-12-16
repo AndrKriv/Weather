@@ -22,31 +22,14 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.weather.BottomActivity
+import com.example.weather.objects.toAllProject
 import com.example.weather.ui.forecast.urlForecast
 
 class TodayFragment : Fragment() {
     var lat = ""
     var lon = ""
-    var sp: SharedPreferences? = null
+    var sharedPreferences: SharedPreferences? = null
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Log.d("WSWS","onAttach")
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d("WSWS","onCreate")
-
-//        if (savedInstanceState == null) {
-//            Log.d("WSWS","savedInstanceState is null")
-//        } else {
-//            Log.d("WSWS","savedInstanceState is not null")
-//            lat2 = savedInstanceState.getString("lat","a").toString()
-//            lon2 = savedInstanceState.getString("lon","b").toString()
-//            Log.d("WSWS","RTY "+savedInstanceState.getString(lat2).toString())
-//        }
-    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,29 +37,27 @@ class TodayFragment : Fragment() {
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_today, container, false)
 
-        val lat2 = savedInstanceState?.getString("lat").toString()
-        val lon2 = savedInstanceState?.getString("lon").toString()
-        Log.d("WSWSWS2",  lat2)
-        Log.d("WSWSWS2",  lon2)
-
-        Log.d("WSWS","onCreateView")
+        val lat2 = savedInstanceState?.getString(toAllProject.latitude).toString()
+        val lon2 = savedInstanceState?.getString(toAllProject.longitude).toString()
         var str:String = ""
 
         val tvCity = view.findViewById<TextView>(R.id.tv_city)
-        val tvDegrees = view.findViewById<TextView>(R.id.tv_degrees)
+        val tvTemp = view.findViewById<TextView>(R.id.tv_temp)
         val tvDescription = view.findViewById<TextView>(R.id.tv_decription)
         val tvDate = view.findViewById<TextView>(R.id.tv_date)
+
+        val tvPressure = view.findViewById<TextView>(R.id.tv_pressure)
+        val tvHumidity = view.findViewById<TextView>(R.id.tv_humidity)
+        val tvWindD = view.findViewById<TextView>(R.id.tv_wind)
+        val tvWindSpeed = view.findViewById<TextView>(R.id.tv_wind_speed)
+
         val btnCheck = view.findViewById<Button>(R.id.share)
         val ivDescr = view.findViewById<ImageView>(R.id.iv_img)
 
-        sp = this.activity?.getSharedPreferences("pref", Context.MODE_PRIVATE)
+        sharedPreferences = this.activity?.getSharedPreferences(toAllProject.prefName, Context.MODE_PRIVATE)
+        lat = sharedPreferences?.getString(toAllProject.latitude,null).toString()
+        lon = sharedPreferences?.getString(toAllProject.longitude,null).toString()
 
-        lat = sp?.getString("lat",null).toString()
-        lon = sp?.getString("lon",null).toString()
-
-        Log.d("WSWS","RTY "+savedInstanceState?.getString(lat2).toString())
-        Log.d("RTY2",lat)
-        Log.d("RTY2",lon)
         val dispose = if(savedInstanceState!=null)
         {
             urlTodayWeather(lat2,lon2)
@@ -88,88 +69,33 @@ class TodayFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 tvCity?.text=it[0]
-                tvDegrees?.text=it[1]
-                tvDescription?.text=it[2]
+                tvTemp?.text=it[1]+"°С"
+                tvDescription?.text="На улице ${it[2]}"
                 tvDate?.text=it[3]
+                tvPressure?.text="Давление "+it[4]
+                tvHumidity?.text="Влажность "+it[5]+"%"
+                tvWindD?.text="Ветер ${it[6]}"
+                tvWindSpeed?.text="Скорость ветра "+it[7]+" км/ч"
                 ivDescr?.setImageResource(ImageChecker.imageWeather(tvDescription?.text.toString()))
                 str=createSharingString.wthString(it[0],it[1],it[2])
             },{
-                Toast.makeText(context,"Возникла ошибка, попробуйте перезагрузить", Toast.LENGTH_SHORT).show()
-                Log.e("XRENb2", it.localizedMessage)
+                Toast.makeText(context,R.string.error, Toast.LENGTH_SHORT).show()
             },{
                 //make something
             })
 
         btnCheck.setOnClickListener {
-            Log.d("TPTR2",str)
             val intent=Intent()
-            startActivity(ShareText.sendHard(intent,str
-                    +"\nБыло отправлено с помощью приложения Weather"))
+            startActivity(ShareText.sendHard(intent,str+"\n"+R.string.MarkMyApp))
         }
         return view
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        Log.d("WSWS","onActivityCreated")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("WSWS","onStart")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("WSWS","onResume")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("WSWS","onPause")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("WSWS","onStop")
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d("WSWS","onDestroyView")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("WSWS","onDestroy")
-        context?.getSharedPreferences ("pref", 0)?.edit()?.clear()?.commit ()
-        //call destroy sh
-        var editor = sp?.edit()
-        editor?.clear()
-        editor?.remove("pref")
-        Log.d("WSWS","прошел?")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("WSWS","onDetach/")
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        Log.d("WSWS","onViewStateRestored")
-        super.onViewStateRestored(savedInstanceState)
-    }
-
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        Log.d("WSWS","onSaveInstanceState")
         super.onSaveInstanceState(savedInstanceState)
-            //sp = this.activity?.getSharedPreferences("pref", Context.MODE_PRIVATE)
-        lat = sp?.getString("lat",null).toString()
-        lon = sp?.getString("lon",null).toString()
-        savedInstanceState.putString("lat",lat)
-        Log.d("WSWSW",lat)
-        savedInstanceState.putString("lon",lon)
-        Log.d("WSWSW",lon)
+        lat = sharedPreferences?.getString(toAllProject.latitude,"").toString()
+        lon = sharedPreferences?.getString(toAllProject.longitude,"").toString()
+        savedInstanceState.putString(toAllProject.latitude,lat)
+        savedInstanceState.putString(toAllProject.longitude,lon)
     }
 }
