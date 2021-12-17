@@ -3,36 +3,24 @@ package com.example.weather
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.preference.PreferenceManager
 import android.provider.Settings
-import android.provider.Settings.System.putString
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.connection.CheckConnection
-import com.example.weather.databinding.ActivityBottomBinding
 import com.example.weather.objects.toAllProject
-import com.example.weather.ui.forecast.ForecastFragment
-import com.example.weather.ui.today.TodayFragment
 import com.google.android.gms.location.*
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
 
 class BottomActivity : AppCompatActivity(){
     var string:String?=""
@@ -73,8 +61,8 @@ class BottomActivity : AppCompatActivity(){
                 PackageManager.PERMISSION_GRANTED) {
                 true
             } else {
-                // Show the permission request
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     toAllProject.REQUEST_PERMISSION_LOCATION)
                 false
             }

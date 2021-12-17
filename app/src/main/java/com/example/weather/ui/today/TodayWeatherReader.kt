@@ -11,8 +11,8 @@ import java.net.URL
 
     fun urlTodayWeather(lat:String,lon:String):Observable<List<String>>{
         return create { subscriber ->
-            val newURL: String = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${toAllProject.key}&units=metric&lang=ru"
-            val api = URL(newURL).readText()
+            val URL = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${toAllProject.key}&units=metric&lang=ru"
+            val api = URL(URL).readText()
             val weath = JSONObject(api).getJSONArray("weather")
             val description = weath.getJSONObject(0).getString("description")
 

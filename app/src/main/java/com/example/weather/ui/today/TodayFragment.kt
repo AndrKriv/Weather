@@ -2,7 +2,6 @@ package com.example.weather.ui.today
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,11 +18,7 @@ import io.reactivex.schedulers.Schedulers
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import com.example.weather.BottomActivity
 import com.example.weather.objects.toAllProject
-import com.example.weather.ui.forecast.urlForecast
 
 class TodayFragment : Fragment() {
     var lat = ""
@@ -39,7 +34,7 @@ class TodayFragment : Fragment() {
 
         val lat2 = savedInstanceState?.getString(toAllProject.latitude).toString()
         val lon2 = savedInstanceState?.getString(toAllProject.longitude).toString()
-        var str:String = ""
+        var stringToShare:String = ""
 
         val tvCity = view.findViewById<TextView>(R.id.tv_city)
         val tvTemp = view.findViewById<TextView>(R.id.tv_temp)
@@ -75,18 +70,18 @@ class TodayFragment : Fragment() {
                 tvPressure?.text="Давление "+it[4]
                 tvHumidity?.text="Влажность "+it[5]+"%"
                 tvWindD?.text="Ветер ${it[6]}"
-                tvWindSpeed?.text="Скорость ветра "+it[7]+" км/ч"
-                ivDescr?.setImageResource(ImageChecker.imageWeather(tvDescription?.text.toString()))
-                str=createSharingString.wthString(it[0],it[1],it[2])
+                tvWindSpeed?.text="Скорость ветра\n"+it[7]+" м/c"
+                ivDescr?.setImageResource(ImageChecker.imageWeather(it[2]))
+                stringToShare = createSharingString.wthString(it[0],it[1],it[2],it[6],it[7],it[5],it[4])
             },{
-                Toast.makeText(context,R.string.error, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,R.string.tap, Toast.LENGTH_LONG).show()
             },{
                 //make something
             })
 
         btnCheck.setOnClickListener {
             val intent=Intent()
-            startActivity(ShareText.sendHard(intent,str+"\n"+R.string.MarkMyApp))
+            startActivity(ShareText.sendHard(intent,stringToShare+"\nБыло отправлено с помощью приложения Weather"))
         }
         return view
     }

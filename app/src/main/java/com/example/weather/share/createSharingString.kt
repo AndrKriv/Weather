@@ -1,8 +1,9 @@
 package com.example.weather.share
 
 object createSharingString {
-    fun wthString(city:String,degrees:String,description:String):String =
-        "Сейчас в "+city+ " "+degrees+" °C, и на улице "+description
+    fun wthString(city:String,degrees:String,description:String, wind:String, speedWind:String, humidity:String, pressure:String):String =
+        "В "+city+ " сейчас "+degrees+"°C, на улице " + description + ", ветер "+ wind +", и скорость ветра "+speedWind+" м/с"+
+                "\nВлажность " + humidity +"%, давление " +pressure
 }
 
 

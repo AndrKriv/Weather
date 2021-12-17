@@ -1,8 +1,5 @@
 package com.example.weather.OWM
 
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import com.example.weather.R
 
 object ImageChecker{
@@ -17,6 +14,10 @@ object ImageChecker{
             "дождь" -> R.drawable.rain
             "небольшой дождь" -> R.drawable.rain_small
             "проливной дождь" -> R.drawable.rain
+            "небольшой снег" -> R.drawable.small_snow
+            "снег" -> R.drawable.snowing
+            "снег с дождем" -> R.drawable.snow_rain
+            "туман"->R.drawable.fog
             else -> R.drawable.unknown
 
         }
