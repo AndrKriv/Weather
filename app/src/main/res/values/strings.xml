@@ -11,4 +11,13 @@
     <string name="no">Нет</string>
     <string name="error">Возникла ошибка загрузки данных, попробуйте перезагрузить приложение</string>
     <string name="tap">Нажмите на пункт Today в панели навигации</string>
+    <string name="ne">СВ</string>
+    <string name="se">ЮВ</string>
+    <string name="sw">ЮЗ</string>
+    <string name="nw">СЗ</string>
+    <string name="east">Восточный</string>
+    <string name="south">Южный</string>
+    <string name="west">Западный</string>
+    <string name="north">Северный</string>
+    <string name="fab">Share</string>
 </resources>

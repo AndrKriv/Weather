@@ -3,6 +3,8 @@ package com.example.weather
 import java.text.SimpleDateFormat
 import java.util.*
 
+//extensions-fun преобразовать toDate
+//как utils в java
 fun parseDate(startDate:String):String {
     val oldDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val newDateFormat = SimpleDateFormat("HH:mm, dd MMMM yyyy", Locale.getDefault())

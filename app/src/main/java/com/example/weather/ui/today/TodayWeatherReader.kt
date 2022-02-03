@@ -29,6 +29,6 @@ import java.net.URL
             val windD = WindDirection.windDirection(deg)
             val city = JSONObject(api).getString("name")
 
-            subscriber.onNext(listOf(city, temp, description, today(), pressure, humidity, windD,windSpeed))
+            subscriber.onNext(listOf(city, temp, description, today(), pressure, humidity, windD,windSpeed) as List<String>)
         }
     }

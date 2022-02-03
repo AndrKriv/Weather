@@ -18,11 +18,14 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.connection.CheckConnection
+import com.example.weather.databinding.ActivityBottomBinding
 import com.example.weather.objects.toAllProject
 import com.google.android.gms.location.*
 import java.util.*
 
 class BottomActivity : AppCompatActivity(){
+    private lateinit var binding: ActivityBottomBinding
+
     var string:String?=""
 
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
@@ -31,16 +34,19 @@ class BottomActivity : AppCompatActivity(){
     val connection = CheckConnection()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bottom)
+        binding = ActivityBottomBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         mLocationRequest = LocationRequest()
 
-        val navBar = findViewById<BottomNavigationView>(R.id.nav_view)
+        val navBar = binding.navView
+
+        //val navBar2 = findViewById<BottomNavigationView>(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment_activity_bottom)
         navBar.setupWithNavController(navController)
 
         if(connection.checkForInternet(this)) {
-            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 buildAlertMessageNoGps()
             }
@@ -133,6 +139,7 @@ class BottomActivity : AppCompatActivity(){
                 startActivityForResult(
                     Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     ,toAllProject.requestCode)
+                //переработать вызов настроек
             }
             .setNegativeButton(R.string.no) { dialog, id ->
                 dialog.cancel()
@@ -144,6 +151,6 @@ class BottomActivity : AppCompatActivity(){
 
     override fun onDestroy() {
         super.onDestroy()
-        stopLocationUpdates()
+        stopLocationUpdates()//onstop or onpause
     }
 }

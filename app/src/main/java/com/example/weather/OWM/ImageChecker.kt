@@ -2,7 +2,8 @@ package com.example.weather.OWM
 
 import com.example.weather.R
 
-object ImageChecker{
+object ImageChecker{//мапинг данных
+    //single responcibility -не сюда
     fun imageWeather(stringChecker:String):Int{
         return when(stringChecker) {
             "ясно" -> R.drawable.sun

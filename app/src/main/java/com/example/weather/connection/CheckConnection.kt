@@ -5,9 +5,12 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 
-open class CheckConnection {
+open class CheckConnection {//переименовать класс isInternetValiable
+    //is перед методом
+    //удалить комментарии
      fun checkForInternet(context: Context): Boolean {
         // register activity with the connectivity manager service
+    //переработать чтобы меньше true/false
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         // if the android version is equal to M
