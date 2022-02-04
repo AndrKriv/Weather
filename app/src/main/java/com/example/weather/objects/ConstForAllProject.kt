@@ -1,6 +1,6 @@
 package com.example.weather.objects
 
-object toAllProject {//consttoallproj rename OR //companionobj
+object ConstForAllProject {
     //убрать в другие места, так как это могут видеть классы, которым не надо это знать
     val requestCode:Int=11
     val latitude = "lat"

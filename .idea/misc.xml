@@ -3,7 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.21875" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/drawable/ic_sunny_24.xml" value="0.21875" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/drawable/item_stroke.xml" value="0.28615384615384615" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/drawable/shape.xml" value="0.28615384615384615" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/drawable/today_back_land.xml" value="0.21875" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/drawable/today_background.xml" value="0.20364583333333333" />
         <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout-land/fragment_today.xml" value="0.23236331569664903" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout-land/item_forecast.xml" value="0.23236331569664903" />
         <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout/activity_bottom.xml" value="0.2595108695652174" />
         <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout/fragment_forecast.xml" value="0.2595108695652174" />
         <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout/fragment_today.xml" value="0.2595108695652174" />

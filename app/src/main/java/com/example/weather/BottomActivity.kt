@@ -12,46 +12,37 @@ import android.os.Looper
 import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.connection.CheckConnection
 import com.example.weather.databinding.ActivityBottomBinding
-import com.example.weather.objects.toAllProject
+import com.example.weather.objects.ConstForAllProject
 import com.google.android.gms.location.*
 import java.util.*
 
-class BottomActivity : AppCompatActivity(){
+class BottomActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBottomBinding
-
-    var string:String?=""
-
+    var string: String? = ""
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     internal lateinit var mLocationRequest: LocationRequest
-
     val connection = CheckConnection()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBottomBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         mLocationRequest = LocationRequest()
-
         val navBar = binding.navView
-
-        //val navBar2 = findViewById<BottomNavigationView>(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment_activity_bottom)
         navBar.setupWithNavController(navController)
-
-        if(connection.checkForInternet(this)) {
+        if (connection.isInternetChecking(this)) {
             val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 buildAlertMessageNoGps()
             }
-        }
-        else Toast.makeText(this,R.string.connection,Toast.LENGTH_SHORT).show()
+        } else Toast.makeText(this, R.string.connection, Toast.LENGTH_SHORT).show()
     }
 
     override fun onStart() {
@@ -64,12 +55,15 @@ class BottomActivity : AppCompatActivity(){
     fun checkPermissionForLocation(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED) {
+                PackageManager.PERMISSION_GRANTED
+            ) {
                 true
             } else {
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(
+                    this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    toAllProject.REQUEST_PERMISSION_LOCATION)
+                    ConstForAllProject.REQUEST_PERMISSION_LOCATION
+                )
                 false
             }
         } else {
@@ -79,24 +73,22 @@ class BottomActivity : AppCompatActivity(){
 
     protected fun startLocationUpdates() {
         mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
         val builder = LocationSettingsRequest.Builder()
         builder.addLocationRequest(mLocationRequest)
         val locationSettingsRequest = builder.build()
-
         val settingsClient = LocationServices.getSettingsClient(this)
         settingsClient.checkLocationSettings(locationSettingsRequest)
-
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
             PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) {
+            PackageManager.PERMISSION_GRANTED
+        ) {
             return
         }
         Looper.myLooper()?.let {
-            mFusedLocationProviderClient?.requestLocationUpdates(mLocationRequest, mLocationCallback,
+            mFusedLocationProviderClient?.requestLocationUpdates(
+                mLocationRequest, mLocationCallback,
                 it
             )
         }
@@ -108,11 +100,12 @@ class BottomActivity : AppCompatActivity(){
         }
     }
 
-    fun onLocationChanged(location: Location){
-        val sharedPreference = getSharedPreferences(toAllProject.prefName,Context.MODE_PRIVATE)
+    fun onLocationChanged(location: Location) {
+        val sharedPreference =
+            getSharedPreferences(ConstForAllProject.prefName, Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
-        editor.putString(toAllProject.latitude,location.latitude.toString())
-        editor.putString(toAllProject.longitude,location.longitude.toString())
+        editor.putString(ConstForAllProject.latitude, location.latitude.toString())
+        editor.putString(ConstForAllProject.longitude, location.longitude.toString())
         editor.apply()
     }
 
@@ -120,14 +113,18 @@ class BottomActivity : AppCompatActivity(){
         mFusedLocationProviderClient?.removeLocationUpdates(mLocationCallback)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == toAllProject.REQUEST_PERMISSION_LOCATION) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == ConstForAllProject.REQUEST_PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {// доступ к gps разрешен, открываем локацию (пункт настроек)
                 startLocationUpdates()
             } else {
                 Toast.makeText(this@BottomActivity, R.string.denied, Toast.LENGTH_SHORT).show()
             }
-        }else
+        } else
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
@@ -137,9 +134,8 @@ class BottomActivity : AppCompatActivity(){
             .setCancelable(false)
             .setPositiveButton(R.string.yes) { dialog, id ->
                 startActivityForResult(
-                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    ,toAllProject.requestCode)
-                //переработать вызов настроек
+                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), ConstForAllProject.requestCode
+                )
             }
             .setNegativeButton(R.string.no) { dialog, id ->
                 dialog.cancel()

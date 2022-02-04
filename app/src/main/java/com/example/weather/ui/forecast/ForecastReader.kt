@@ -1,18 +1,17 @@
 package com.example.weather.ui.forecast
 
-import com.example.weather.objects.toAllProject
+import com.example.weather.objects.ConstForAllProject
 import com.example.weather.parseDate
 import io.reactivex.Observable
 import org.json.JSONObject
 import java.net.URL
 
-fun urlForecast(lat:String,lon:String): Observable<ArrayList<ForecastInfo>> {
+fun urlForecast(lat: String, lon: String): Observable<ArrayList<ForecastInfo>> {
     return Observable.create { subscriber ->
         var newsList: ArrayList<ForecastInfo> = ArrayList<ForecastInfo>()
-        val URL = "https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=${toAllProject.key}&units=metric&lang=ru"
+        val URL = "https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=${ConstForAllProject.key}&units=metric&lang=ru"
         val api = URL(URL).readText()
         val weath = JSONObject(api).getJSONArray("list")
-
         val count = JSONObject(api).getInt("cnt")
         for (i in 0..count - 1) {
             val description =
