@@ -6,7 +6,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 
 open class CheckConnection {
-    fun isInternetChecking(context: Context): Boolean { //переработать чтобы меньше true/false
+    fun isInternetChecking(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

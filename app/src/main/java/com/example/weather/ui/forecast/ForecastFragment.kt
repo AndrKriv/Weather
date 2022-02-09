@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.weather.R
 import com.example.weather.databinding.FragmentForecastBinding
-import com.example.weather.objects.ConstForAllProject
+import com.example.weather.objects.Constants
 import com.example.weather.ui.viewBinding
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -22,12 +22,12 @@ class ForecastFragment : Fragment(R.layout.fragment_forecast) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val lat2 = savedInstanceState?.getString(ConstForAllProject.latitude).toString()
-        val lon2 = savedInstanceState?.getString(ConstForAllProject.longitude).toString()
+        val lat2 = savedInstanceState?.getString(Constants.latitude).toString()
+        val lon2 = savedInstanceState?.getString(Constants.longitude).toString()
         val f: SharedPreferences? =
-            this.activity?.getSharedPreferences(ConstForAllProject.prefName, Context.MODE_PRIVATE)
-        lat = f?.getString(ConstForAllProject.latitude, null).toString()
-        lon = f?.getString(ConstForAllProject.longitude, null).toString()
+            this.activity?.getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
+        lat = f?.getString(Constants.latitude, null).toString()
+        lon = f?.getString(Constants.longitude, null).toString()
         binding.forecastRecyclerView.addItemDecoration(
             DividerItemDecoration(
                 requireContext(),
@@ -50,10 +50,10 @@ class ForecastFragment : Fragment(R.layout.fragment_forecast) {
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        sp = this.activity?.getSharedPreferences(ConstForAllProject.prefName, Context.MODE_PRIVATE)
-        lat = sp?.getString(ConstForAllProject.latitude, null).toString()
-        lon = sp?.getString(ConstForAllProject.longitude, null).toString()
-        savedInstanceState.putString(ConstForAllProject.latitude, lat)
-        savedInstanceState.putString(ConstForAllProject.longitude, lon)
+        sp = this.activity?.getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
+        lat = sp?.getString(Constants.latitude, null).toString()
+        lon = sp?.getString(Constants.longitude, null).toString()
+        savedInstanceState.putString(Constants.latitude, lat)
+        savedInstanceState.putString(Constants.longitude, lon)
     }
 }

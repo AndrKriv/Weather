@@ -15,10 +15,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.connection.CheckConnection
 import com.example.weather.databinding.ActivityBottomBinding
-import com.example.weather.objects.ConstForAllProject
+import com.example.weather.objects.Constants
 import com.google.android.gms.location.*
 import java.util.*
 
@@ -26,17 +28,20 @@ class BottomActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBottomBinding
     var string: String? = ""
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
-    internal lateinit var mLocationRequest: LocationRequest
+    lateinit var mLocationRequest: LocationRequest
     val connection = CheckConnection()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBottomBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val navigation = binding.navView
+        val navController = binding.navHostFragmentActivityBottom.getFragment<NavHostFragment>().navController
+        navigation.setupWithNavController(navController)
+
         mLocationRequest = LocationRequest()
-        val navBar = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_activity_bottom)
-        navBar.setupWithNavController(navController)
+
         if (connection.isInternetChecking(this)) {
             val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -62,7 +67,7 @@ class BottomActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    ConstForAllProject.REQUEST_PERMISSION_LOCATION
+                    Constants.REQUEST_PERMISSION_LOCATION
                 )
                 false
             }
@@ -102,10 +107,10 @@ class BottomActivity : AppCompatActivity() {
 
     fun onLocationChanged(location: Location) {
         val sharedPreference =
-            getSharedPreferences(ConstForAllProject.prefName, Context.MODE_PRIVATE)
+            getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
-        editor.putString(ConstForAllProject.latitude, location.latitude.toString())
-        editor.putString(ConstForAllProject.longitude, location.longitude.toString())
+        editor.putString(Constants.latitude, location.latitude.toString())
+        editor.putString(Constants.longitude, location.longitude.toString())
         editor.apply()
     }
 
@@ -118,7 +123,7 @@ class BottomActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == ConstForAllProject.REQUEST_PERMISSION_LOCATION) {
+        if (requestCode == Constants.REQUEST_PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {// доступ к gps разрешен, открываем локацию (пункт настроек)
                 startLocationUpdates()
             } else {
@@ -134,7 +139,7 @@ class BottomActivity : AppCompatActivity() {
             .setCancelable(false)
             .setPositiveButton(R.string.yes) { dialog, id ->
                 startActivityForResult(
-                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), ConstForAllProject.requestCode
+                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), Constants.requestCode
                 )
             }
             .setNegativeButton(R.string.no) { dialog, id ->

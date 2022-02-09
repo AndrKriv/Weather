@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.weather.OWM.ImageChecker
 import com.example.weather.R
 import com.example.weather.databinding.FragmentTodayBinding
-import com.example.weather.objects.ConstForAllProject
+import com.example.weather.objects.Constants
 import com.example.weather.share.CreateSharingString
 import com.example.weather.share.ShareText
 import com.example.weather.ui.viewBinding
@@ -26,13 +26,13 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var stringToShare = ""
-        val lat2 = savedInstanceState?.getString(ConstForAllProject.latitude).toString()
-        val lon2 = savedInstanceState?.getString(ConstForAllProject.longitude).toString()
+        val lat2 = savedInstanceState?.getString(Constants.latitude).toString()
+        val lon2 = savedInstanceState?.getString(Constants.longitude).toString()
 
         sharedPreferences =
-            this.activity?.getSharedPreferences(ConstForAllProject.prefName, Context.MODE_PRIVATE)
-        lat = sharedPreferences?.getString(ConstForAllProject.latitude, null).toString()
-        lon = sharedPreferences?.getString(ConstForAllProject.longitude, null).toString()
+            this.activity?.getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
+        lat = sharedPreferences?.getString(Constants.latitude, null).toString()
+        lon = sharedPreferences?.getString(Constants.longitude, null).toString()
 
         val dispose = if (savedInstanceState != null) {
             urlTodayWeather(lat2, lon2)
@@ -42,16 +42,17 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                binding.tvCity.text = it[0]
-                binding.tvTemp.text = it[1] + "°С"
-                binding.tvDescription.text = "На улице ${it[2]}"
-                binding.tvDate.text = it[3]
-                binding.tvPressure.text = "Давление " + it[4]
-                binding.tvHumidity.text = "Влажность " + it[5] + "%"
-                binding.tvWind.text = "Ветер " + it[6]
-                binding.tvWindSpeed.text = "Скорость ветра: " + it[7] + " м/c"
-                binding.ivImg.setImageResource(ImageChecker.imageWeather(it[2]))
-
+                with(binding) {
+                    tvCity.text = it[0]
+                    tvTemp.text = "${it[1]}°С"
+                    tvDescription.text = "На улице ${it[2]}"
+                    tvDate.text = it[3]
+                    tvPressure.text = "Давление ${it[4]}"
+                    tvHumidity.text = "Влажность ${it[5]}%"
+                    tvWind.text = "Ветер ${it[6]}"
+                    tvWindSpeed.text = "Скорость ветра: ${it[7]} м/c"
+                    ivImg.setImageResource(ImageChecker.imageWeather(it[2]))
+                }
                 stringToShare =
                     CreateSharingString.wthString(it[0], it[1], it[2], it[6], it[7], it[5], it[4])
             }, {
@@ -61,7 +62,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         binding.share.setOnClickListener {
             val intent = Intent()
             startActivity(
-                ShareText.sendWeather(
+                ShareText.createSharingIntent(
                     intent,
                     stringToShare + R.string.sharing
                 )
@@ -71,9 +72,9 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        lat = sharedPreferences?.getString(ConstForAllProject.latitude, "").toString()
-        lon = sharedPreferences?.getString(ConstForAllProject.longitude, "").toString()
-        savedInstanceState.putString(ConstForAllProject.latitude, lat)
-        savedInstanceState.putString(ConstForAllProject.longitude, lon)
+        lat = sharedPreferences?.getString(Constants.latitude, "").toString()
+        lon = sharedPreferences?.getString(Constants.longitude, "").toString()
+        savedInstanceState.putString(Constants.latitude, lat)
+        savedInstanceState.putString(Constants.longitude, lon)
     }
 }

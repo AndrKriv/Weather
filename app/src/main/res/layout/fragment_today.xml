@@ -11,8 +11,8 @@
         android:id="@+id/weather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:text="@string/weather"
         android:textColor="@color/black"
         android:textSize="24sp"
@@ -24,7 +24,7 @@
         android:id="@+id/ivImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/weather" />
@@ -33,102 +33,94 @@
         android:id="@+id/tvCity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivImg" />
+        app:layout_constraintTop_toBottomOf="@id/ivImg" />
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textSize="16sp"
-
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCity" />
+        app:layout_constraintTop_toBottomOf="@id/tvCity" />
 
     <TextView
         android:id="@+id/tvTemp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+        app:layout_constraintTop_toBottomOf="@id/tvDate" />
 
     <TextView
         android:id="@+id/tvDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTemp" />
+        app:layout_constraintTop_toBottomOf="@id/tvTemp" />
 
     <TextView
         android:id="@+id/tvPressure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
+        app:layout_constraintTop_toBottomOf="@id/tvDescription" />
 
     <TextView
         android:id="@+id/tvHumidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPressure" />
+        app:layout_constraintTop_toBottomOf="@id/tvPressure" />
 
     <TextView
         android:id="@+id/tvWind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvHumidity" />
+        app:layout_constraintTop_toBottomOf="@id/tvHumidity" />
 
     <TextView
         android:id="@+id/tvWindSpeed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/fragment_top_margin"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvWind" />
+        app:layout_constraintTop_toBottomOf="@id/tvWind" />
 
     <Button
         android:id="@+id/share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/fragment_horizontal_margin"
         android:background="@drawable/shape"
         android:fontFamily="sans-serif"
         android:text="@string/share"

@@ -3,21 +3,17 @@ package com.example.weather
 import java.text.SimpleDateFormat
 import java.util.*
 
-//extensions-fun преобразовать toDate
-//как utils в java
-fun parseDate(startDate:String):String {
-    val oldDateFormat = SimpleDateFormat(startDateFormat(), Locale.getDefault())
-    val newDateFormat = SimpleDateFormat(usefullDateFormat(), Locale.getDefault())
-    val date = oldDateFormat.parse(startDate)
-    val result = newDateFormat.format(date)
-    return result
-}
-fun today():String{
-    val onlyDate = SimpleDateFormat(usefullDateFormat()).format(Date())
-    val date = onlyDate
-    return date
+private const val DATE_FORMAT_PATTERN = "HH:mm, dd.MM.yyyy"
+private const val OLD_DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss"
+
+fun String.toDate(): String {
+    val oldDateFormat = SimpleDateFormat(OLD_DATE_FORMAT_PATTERN, Locale.getDefault())
+    val newDateFormat = SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.getDefault())
+    val date = oldDateFormat.parse(this)
+    return newDateFormat.format(date)
 }
 
-fun usefullDateFormat() = "HH:mm, dd.MM.yyyy"
+fun today(): String = SimpleDateFormat(DATE_FORMAT_PATTERN).format(Date())
 
-fun startDateFormat() = "yyyy-MM-dd HH:mm:ss"
+
+
