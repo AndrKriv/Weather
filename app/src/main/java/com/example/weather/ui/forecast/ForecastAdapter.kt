@@ -8,11 +8,11 @@ import com.example.weather.databinding.ItemForecastBinding
 
 class ForecastViewHolder(private val binding: ItemForecastBinding) : RecyclerView.ViewHolder(binding.root){
 
-    fun bindView(list: ForecastInfo) {
+    fun bindView(item: ForecastInfo) {
         with(binding) {
-            timeTv.text  = list.time
-            degreesTv.text = list.degrees
-            descriptionTv.text = list.description
+            timeTv.text  = item.time
+            degreesTv.text = item.degrees
+            descriptionTv.text = item.description
             weatherImg.setImageResource(ImageChecker.imageWeather(descriptionTv.text.toString()))
         }
     }
