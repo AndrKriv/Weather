@@ -6,7 +6,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.OWM.ImageChecker
 import com.example.weather.databinding.ItemForecastBinding
 
-class ForecastViewHolder(val binding: ItemForecastBinding) : RecyclerView.ViewHolder(binding.root)
+class ForecastViewHolder(private val binding: ItemForecastBinding) : RecyclerView.ViewHolder(binding.root){
+
+    fun bindView(list: ForecastInfo) {
+        with(binding) {
+            timeTv.text  = list.time
+            degreesTv.text = list.degrees
+            descriptionTv.text = list.description
+            weatherImg.setImageResource(ImageChecker.imageWeather(descriptionTv.text.toString()))
+        }
+    }
+}
 
 class ForecastAdapter(private val owList: ArrayList<ForecastInfo>) :
     RecyclerView.Adapter<ForecastViewHolder>() {
@@ -21,14 +31,7 @@ class ForecastAdapter(private val owList: ArrayList<ForecastInfo>) :
         )
     }
 
-    override fun onBindViewHolder(holder: ForecastViewHolder, position: Int) {
-        with(holder.binding){
-            timeTv.text = owList[position].time
-            degreesTv.text = owList[position].degrees
-            descriptionTv.text = owList[position].description
-            weatherImg.setImageResource(ImageChecker.imageWeather(descriptionTv.text.toString()))
-        }
-    }
+    override fun onBindViewHolder(holder: ForecastViewHolder, position: Int) = holder.bindView(owList[position])
 
     override fun getItemCount() = owList.size
 }

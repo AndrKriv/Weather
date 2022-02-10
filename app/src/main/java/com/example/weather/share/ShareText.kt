@@ -4,10 +4,11 @@ import android.content.Intent
 
 object ShareText {
 
-    fun createSharingIntent(intent: Intent, txt: String): Intent {
-        intent.action = Intent.ACTION_SEND
-        intent.putExtra(Intent.EXTRA_TEXT, txt)
-        intent.type = "text/plain"
-        return Intent.createChooser(intent, "Launch")
+    fun createSharingIntent(
+        messageText: String
+    ) = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, messageText)
+            type = "text/plain"
     }
 }

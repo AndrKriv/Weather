@@ -15,29 +15,31 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class ForecastFragment : Fragment(R.layout.fragment_forecast) {
-    var lat = ""
-    var lon = ""
-    var sp: SharedPreferences? = null
+    var latitude = ""
+    var longitude = ""
+    var sharedPreferences: SharedPreferences? = null
     private val binding: FragmentForecastBinding by viewBinding(FragmentForecastBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val lat2 = savedInstanceState?.getString(Constants.latitude).toString()
-        val lon2 = savedInstanceState?.getString(Constants.longitude).toString()
-        val f: SharedPreferences? =
-            this.activity?.getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
-        lat = f?.getString(Constants.latitude, null).toString()
-        lon = f?.getString(Constants.longitude, null).toString()
+        val latitude2 = savedInstanceState?.getString(Constants.latitude).toString()
+        val longitude2 = savedInstanceState?.getString(Constants.longitude).toString()
+        val spReader: SharedPreferences? =
+            this.activity?.getSharedPreferences(Constants.preferencesName, Context.MODE_PRIVATE)
+        latitude = spReader?.getString(Constants.latitude, null).toString()
+        longitude = spReader?.getString(Constants.longitude, null).toString()
+
         binding.forecastRecyclerView.addItemDecoration(
             DividerItemDecoration(
                 requireContext(),
                 DividerItemDecoration.VERTICAL
             )
         )
+
         val dispose = if (savedInstanceState != null) {
-            urlForecast(lat2, lon2)
+            urlForecast(latitude2, longitude2)
         } else {
-            urlForecast(lat, lon)
+            urlForecast(latitude, longitude)
         }
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
@@ -50,10 +52,10 @@ class ForecastFragment : Fragment(R.layout.fragment_forecast) {
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        sp = this.activity?.getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
-        lat = sp?.getString(Constants.latitude, null).toString()
-        lon = sp?.getString(Constants.longitude, null).toString()
-        savedInstanceState.putString(Constants.latitude, lat)
-        savedInstanceState.putString(Constants.longitude, lon)
+        sharedPreferences = this.activity?.getSharedPreferences(Constants.preferencesName, Context.MODE_PRIVATE)
+        latitude = sharedPreferences?.getString(Constants.latitude, null).toString()
+        longitude = sharedPreferences?.getString(Constants.longitude, null).toString()
+        savedInstanceState.putString(Constants.latitude, latitude)
+        savedInstanceState.putString(Constants.longitude, longitude)
     }
 }

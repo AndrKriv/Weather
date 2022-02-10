@@ -18,26 +18,26 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class TodayFragment : Fragment(R.layout.fragment_today) {
-    private var lat = ""
-    private var lon = ""
+    private var latitude = ""
+    private var longitude = ""
     var sharedPreferences: SharedPreferences? = null
     private val binding: FragmentTodayBinding by viewBinding(FragmentTodayBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var stringToShare = ""
-        val lat2 = savedInstanceState?.getString(Constants.latitude).toString()
-        val lon2 = savedInstanceState?.getString(Constants.longitude).toString()
+        val latitude2 = savedInstanceState?.getString(Constants.latitude).toString()
+        val longitude2 = savedInstanceState?.getString(Constants.longitude).toString()
 
         sharedPreferences =
-            this.activity?.getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
-        lat = sharedPreferences?.getString(Constants.latitude, null).toString()
-        lon = sharedPreferences?.getString(Constants.longitude, null).toString()
+            this.activity?.getSharedPreferences(Constants.preferencesName, Context.MODE_PRIVATE)
+        latitude = sharedPreferences?.getString(Constants.latitude, null).toString()
+        longitude = sharedPreferences?.getString(Constants.longitude, null).toString()
 
         val dispose = if (savedInstanceState != null) {
-            urlTodayWeather(lat2, lon2)
+            urlTodayWeather(latitude2, longitude2)
         } else {
-            urlTodayWeather(lat, lon)
+            urlTodayWeather(latitude, longitude)
         }
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
@@ -60,21 +60,22 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
             }, {})
 
         binding.share.setOnClickListener {
-            val intent = Intent()
-            startActivity(
+            val chooser = Intent.createChooser(
                 ShareText.createSharingIntent(
-                    intent,
-                    stringToShare + R.string.sharing
-                )
+                    "$stringToShare ${R.string.sharing}"
+                ), "Launch"
+            )
+            startActivity(
+                chooser
             )
         }
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        lat = sharedPreferences?.getString(Constants.latitude, "").toString()
-        lon = sharedPreferences?.getString(Constants.longitude, "").toString()
-        savedInstanceState.putString(Constants.latitude, lat)
-        savedInstanceState.putString(Constants.longitude, lon)
+        latitude = sharedPreferences?.getString(Constants.latitude, "").toString()
+        longitude = sharedPreferences?.getString(Constants.longitude, "").toString()
+        savedInstanceState.putString(Constants.latitude, latitude)
+        savedInstanceState.putString(Constants.longitude, longitude)
     }
 }

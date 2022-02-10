@@ -14,9 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.connection.CheckConnection
 import com.example.weather.databinding.ActivityBottomBinding
@@ -29,7 +27,7 @@ class BottomActivity : AppCompatActivity() {
     var string: String? = ""
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     lateinit var mLocationRequest: LocationRequest
-    val connection = CheckConnection()
+    private val connection = CheckConnection()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +35,8 @@ class BottomActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navigation = binding.navView
-        val navController = binding.navHostFragmentActivityBottom.getFragment<NavHostFragment>().navController
-        navigation.setupWithNavController(navController)
+        val navigationController = binding.navHostFragmentActivityBottom.getFragment<NavHostFragment>().navController
+        navigation.setupWithNavController(navigationController)
 
         mLocationRequest = LocationRequest()
 
@@ -57,7 +55,7 @@ class BottomActivity : AppCompatActivity() {
         }
     }
 
-    fun checkPermissionForLocation(context: Context): Boolean {
+    private fun checkPermissionForLocation(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
@@ -107,7 +105,7 @@ class BottomActivity : AppCompatActivity() {
 
     fun onLocationChanged(location: Location) {
         val sharedPreference =
-            getSharedPreferences(Constants.prefName, Context.MODE_PRIVATE)
+            getSharedPreferences(Constants.preferencesName, Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
         editor.putString(Constants.latitude, location.latitude.toString())
         editor.putString(Constants.longitude, location.longitude.toString())
@@ -133,16 +131,16 @@ class BottomActivity : AppCompatActivity() {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    fun buildAlertMessageNoGps() {
+    private fun buildAlertMessageNoGps() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(R.string.location)
             .setCancelable(false)
-            .setPositiveButton(R.string.yes) { dialog, id ->
+            .setPositiveButton(R.string.yes) { _, _ ->
                 startActivityForResult(
                     Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), Constants.requestCode
                 )
             }
-            .setNegativeButton(R.string.no) { dialog, id ->
+            .setNegativeButton(R.string.no) { dialog, _ ->
                 dialog.cancel()
                 finish()
             }
