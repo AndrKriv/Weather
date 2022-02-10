@@ -9,14 +9,12 @@
         android:id="@+id/navigation_today"
         android:name="com.example.weather.ui.today.TodayFragment"
         android:label="@string/today"
-        tools:layout="@layout/fragment_today" >
-    </fragment>
+        tools:layout="@layout/fragment_today" />
 
     <fragment
         android:id="@+id/navigation_forecast"
         android:name="com.example.weather.ui.forecast.ForecastFragment"
         android:label="@string/forecast"
-        tools:layout="@layout/fragment_forecast" >
-    </fragment>
+        tools:layout="@layout/fragment_forecast" />
 
 </navigation>

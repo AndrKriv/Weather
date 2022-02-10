@@ -14,12 +14,4 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="MyMaterial" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Add attributes here -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/teal_700</item>
-    </style>
-
-
 </resources>

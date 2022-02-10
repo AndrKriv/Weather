@@ -3,10 +3,12 @@
     <string name="title_activity_bottom">BottomActivity</string>
     <string name="forecast">Forecast</string>
     <string name="today">Today</string>
+    <string name="today2.0">Сегодня</string>
+    <string name="forecast2.0">На 5 дней</string>
     <string name="denied">Доступ запрещён</string>
     <string name="lat">Today</string>
     <string name="connection">Проверьте Ваше интернет-соединение!</string>
-    <string name="location">Ваша геолокация выключена.\nВключить?</string>
+    <string name="location">Ваша геолокация выключена. Включить?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="error">Возникла ошибка загрузки данных, попробуйте перезагрузить приложение</string>
@@ -20,4 +22,7 @@
     <string name="west">Западный</string>
     <string name="north">Северный</string>
     <string name="fab">Share</string>
+    <string name="share">Поделиться</string>
+    <string name="weather">Погода</string>
+    <string name="sharing">Было отправлено с помощью приложения Weather</string>
 </resources>
