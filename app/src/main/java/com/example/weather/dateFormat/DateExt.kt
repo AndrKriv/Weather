@@ -15,5 +15,8 @@ fun String.toDate(): String {
 
 fun today(): String = SimpleDateFormat(DATE_FORMAT_PATTERN).format(Date())
 
+fun String.timestampConverter():String{
+    return SimpleDateFormat(DATE_FORMAT_PATTERN).format(this.toLong())
+}
 
 

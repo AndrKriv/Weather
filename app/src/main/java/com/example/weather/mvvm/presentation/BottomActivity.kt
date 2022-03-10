@@ -1,4 +1,4 @@
-package com.example.weather
+package com.example.weather.mvvm.presentation
 
 import android.Manifest
 import android.content.Context
@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.weather.R
 import com.example.weather.connection.CheckConnection
 import com.example.weather.databinding.ActivityBottomBinding
 import com.example.weather.objects.Constants
@@ -45,7 +46,8 @@ class BottomActivity : AppCompatActivity() {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 buildAlertMessageNoGps()
             }
-        } else Toast.makeText(this, R.string.connection, Toast.LENGTH_SHORT).show()
+        }else Toast.makeText(this, R.string.connection, Toast.LENGTH_SHORT).show()
+
     }
 
     override fun onStart() {
@@ -74,6 +76,16 @@ class BottomActivity : AppCompatActivity() {
         }
     }
 
+//    private fun checkPermissions(): Boolean {
+//        if (
+//            ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+//                (this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+//            return true
+//        }
+//        return false
+//    }
+
+
     protected fun startLocationUpdates() {
         mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         val builder = LocationSettingsRequest.Builder()
@@ -89,6 +101,7 @@ class BottomActivity : AppCompatActivity() {
         ) {
             return
         }
+
         Looper.myLooper()?.let {
             mFusedLocationProviderClient?.requestLocationUpdates(
                 mLocationRequest, mLocationCallback,
@@ -116,19 +129,30 @@ class BottomActivity : AppCompatActivity() {
         mFusedLocationProviderClient?.removeLocationUpdates(mLocationCallback)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        if (requestCode == Constants.REQUEST_PERMISSION_LOCATION) {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {// доступ к gps разрешен, открываем локацию (пункт настроек)
+//                startLocationUpdates()
+//            } else {
+//                Toast.makeText(this@BottomActivity, R.string.denied, Toast.LENGTH_SHORT).show()
+//            }
+//        } else
+//            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == Constants.REQUEST_PERMISSION_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {// доступ к gps разрешен, открываем локацию (пункт настроек)
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 startLocationUpdates()
-            } else {
-                Toast.makeText(this@BottomActivity, R.string.denied, Toast.LENGTH_SHORT).show()
             }
-        } else
+        }
+        else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
     }
 
     private fun buildAlertMessageNoGps() {
