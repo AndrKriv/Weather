@@ -3,19 +3,23 @@ package com.example.weather.mvvm.presentation.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weather.OWM.ImageChecker
 import com.example.weather.databinding.ItemForecastBinding
+import com.example.weather.dateFormat.toDate
 import com.example.weather.mvvm.core.ForecastInfo
+import com.example.weather.mvvm.domain.usecase.GetWeatherPictureUseCase
+
+private val image by lazy { GetWeatherPictureUseCase() }
 
 class ForecastViewHolder(private val binding: ItemForecastBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bindView(item: ForecastInfo) {
         with(binding) {
-            timeTv.text = item.time
+            timeTv.text = item.time.toDate()
             degreesTv.text = item.temp.degrees
             descriptionTv.text = item.weather.single().description
-            weatherImg.setImageResource(ImageChecker.imageWeather(descriptionTv.text.toString()))
+            weatherImg.setImageResource(
+                image.execute(descriptionTv.text.toString()))
         }
     }
 }

@@ -6,9 +6,8 @@ import com.google.gson.annotations.SerializedName
 data class ForecastList(
     @SerializedName("list")
     @Expose
-    val list: List<ForecastInfo>
+    var list: List<ForecastInfo>
 )
-
 data class ForecastInfo(
     @SerializedName("dt_txt")
     val time: String,
@@ -19,7 +18,6 @@ data class ForecastInfo(
     @Expose
     var temp: Temp
 )
-
 data class Description (
     @SerializedName("description")
     @Expose

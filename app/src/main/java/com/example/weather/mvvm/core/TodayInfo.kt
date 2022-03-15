@@ -20,13 +20,11 @@ data class TodayInfo(
     @Expose
     val wind: Wind
 )
-
 data class TodayDescription (
     @SerializedName("description")
     @Expose
     val description: String
 )
-
 data class Main(
     @SerializedName("temp")
     @Expose
@@ -36,10 +34,13 @@ data class Main(
     val pressure: String,
     @SerializedName("humidity")
     @Expose
-    val humidity: String)
-
+    val humidity: String
+    )
 data class Wind(
     @SerializedName("speed")
     @Expose
-    var speed: String
+    val speed: String,
+    @SerializedName("deg")
+    @Expose
+    val deg: Int
 )

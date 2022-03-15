@@ -8,6 +8,4 @@ class GetLocationUseCase(private val locationInterface: LocationInterface) {
     fun execute(): Location {
         return locationInterface.getLocation()
     }
-
-
 }

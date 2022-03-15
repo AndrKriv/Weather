@@ -9,6 +9,7 @@
     <string name="lat">Today</string>
     <string name="connection">Проверьте Ваше интернет-соединение!</string>
     <string name="location">Ваша геолокация выключена. Включить?</string>
+    <string name="internet">Ваша сеть выключена. Включить?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="error">Возникла ошибка загрузки данных, попробуйте перезагрузить приложение</string>

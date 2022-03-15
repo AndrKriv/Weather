@@ -3,7 +3,7 @@ package com.example.weather.degreesCheck
 import com.example.weather.R
 
 object WindDirection {
-    fun windDirection(degrees: Int) = when (degrees) {
+    fun Int.windDirection() = when (this) {
         in 1..89 -> R.string.ne
         in 91..179 -> R.string.se
         in 181..269 -> R.string.sw

@@ -1,23 +1,38 @@
 package com.example.weather.mvvm.presentation.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.RecyclerView
-import com.example.weather.mvvm.core.ForecastInfo
+import com.example.weather.mvvm.core.ForecastList
 import com.example.weather.mvvm.data.APIService
-import com.example.weather.mvvm.presentation.adapter.ForecastAdapter
+import com.example.weather.mvvm.data.ObservableRepository
+import com.example.weather.mvvm.data.repository.LocationImpl
+import com.example.weather.mvvm.domain.usecase.GetLocationUseCase
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class ForecastViewModel : ViewModel() {
+    private val disposable = CompositeDisposable()
+    private val api=APIService
+    private val location by lazy { LocationImpl() }
+    private val useCase by lazy { GetLocationUseCase(location) }
+    var liveData = MutableLiveData<ForecastList>()
 
-    private var myAdapter: ForecastAdapter? = null
-    private var myCompositeDisposable: CompositeDisposable? = null
-    private var myRetroCryptoArrayList: ArrayList<ForecastInfo>? = null
-    private lateinit var recyclerView:RecyclerView
+    fun getForecastData() {
+            disposable.add(
+                ObservableRepository(api.create()).forecastData(
+                useCase.execute().latitude.toString(),
+                useCase.execute().longitude.toString())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    res->liveData.value=res
+                },{
+                    Log.e("AAAA", "Error")
+                })
+            )
+        Log.e("AAAA", useCase.execute().latitude.toString() +" + "+useCase.execute().longitude.toString())
 
-    lateinit var mService: APIService
-
-    //-----------------------------------------------------------------
-//    fun loadData() {
-//    }
-
+    }
 }
