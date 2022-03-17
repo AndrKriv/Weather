@@ -1,14 +1,13 @@
 package com.example.weather.mvvm.presentation.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.databinding.ItemForecastBinding
 import com.example.weather.dateFormat.toDate
 import com.example.weather.mvvm.core.ForecastInfo
-import com.example.weather.mvvm.domain.usecase.GetWeatherPictureUseCase
-
-private val image by lazy { GetWeatherPictureUseCase() }
+import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
 
 class ForecastViewHolder(private val binding: ItemForecastBinding) :
     RecyclerView.ViewHolder(binding.root) {
@@ -18,27 +17,34 @@ class ForecastViewHolder(private val binding: ItemForecastBinding) :
             timeTv.text = item.time.toDate()
             degreesTv.text = item.temp.degrees
             descriptionTv.text = item.weather.single().description
-            weatherImg.setImageResource(
-                image.execute(descriptionTv.text.toString()))
+            weatherImg.setImageResource(TodayViewModel().loadImg(item.weather.single().description)
+            )
         }
     }
 }
 
-class ForecastAdapter(private val owmList: List<ForecastInfo>) :
-    RecyclerView.Adapter<ForecastViewHolder>() {
+class ForecastAdapter : RecyclerView.Adapter<ForecastViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
-        return ForecastViewHolder(
+    private val forecastList = mutableListOf<ForecastInfo>()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder =
+        ForecastViewHolder(
             ItemForecastBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
         )
-    }
 
     override fun onBindViewHolder(holder: ForecastViewHolder, position: Int) =
-        holder.bindView(owmList[position])
+        holder.bindView(forecastList[position])
 
-    override fun getItemCount() = owmList.size
+    override fun getItemCount() = forecastList.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setItems(items: List<ForecastInfo>) {
+        forecastList.clear()
+        forecastList.addAll(items)
+        notifyDataSetChanged()
+    }
 }

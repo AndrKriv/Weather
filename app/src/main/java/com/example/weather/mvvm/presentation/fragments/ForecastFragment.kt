@@ -12,18 +12,20 @@ import com.example.weather.mvvm.presentation.adapter.ForecastAdapter
 import com.example.weather.mvvm.presentation.viewmodel.ForecastViewModel
 
 class ForecastFragment : Fragment(R.layout.fragment_forecast) {
-    lateinit var recyclerAdapter: ForecastAdapter
+
     private val binding: FragmentForecastBinding by viewBinding(FragmentForecastBinding::bind)
     private lateinit var forecastVM: ForecastViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        forecastVM = ViewModelProvider(this)[ForecastViewModel::class.java]
-        forecastVM.getForecastData()
-        forecastVM.liveData.observe(this, Observer {
-            recyclerAdapter = ForecastAdapter(it.list)
-            binding.forecastRecyclerView.adapter = recyclerAdapter
+        val forecastAdapter = ForecastAdapter()
+        forecastVM = ViewModelProvider(this).get(ForecastViewModel::class.java)
+        forecastVM.getForecastData("55", "30")
+        forecastVM.forecastLiveData.observe(this, Observer {
+            forecastAdapter.setItems(it.list)
         })
+        forecastVM.errorLiveData.observe(this, Observer {
+        })
+        binding.forecastRecyclerView.adapter = forecastAdapter
     }
 }

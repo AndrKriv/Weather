@@ -14,6 +14,12 @@
     <string name="no">Нет</string>
     <string name="error">Возникла ошибка загрузки данных, попробуйте перезагрузить приложение</string>
     <string name="tap">Нажмите на пункт Today в панели навигации</string>
+    <string-array name="wind">
+        <item>СВ</item>
+        <item>ЮВ</item>
+        <item>ЮЗ</item>
+        <item>СЗ</item>
+    </string-array>
     <string name="ne">СВ</string>
     <string name="se">ЮВ</string>
     <string name="sw">ЮЗ</string>
@@ -26,4 +32,12 @@
     <string name="share">Поделиться</string>
     <string name="weather">Погода</string>
     <string name="sharing">Было отправлено с помощью приложения Weather</string>
+
+    <string name="city">Город: %s</string>
+    <string name="date">Дата: %s</string>
+    <string name="temp">Температура: %s °C</string>
+    <string name="humidity">Влажность: %s процентов</string>
+    <string name="pressure">Давление: %s мм рт. ст.</string>
+    <string name="wind">Ветер: %s</string>
+    <string name="wind_speed">Скорость ветра: %s м/с</string>
 </resources>

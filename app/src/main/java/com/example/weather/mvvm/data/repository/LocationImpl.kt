@@ -5,8 +5,6 @@ import com.example.weather.mvvm.domain.repository.LocationInterface
 
 class LocationImpl : LocationInterface {
     override fun getLocation(): Location {
-        return Location(
-            55.0,30.0
-        )
+        return Location(55.0, 30.0)
     }
 }

@@ -1,38 +1,35 @@
 package com.example.weather.mvvm.presentation.viewmodel
 
-import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.weather.mvvm.core.ForecastList
 import com.example.weather.mvvm.data.APIService
-import com.example.weather.mvvm.data.ObservableRepository
-import com.example.weather.mvvm.data.repository.LocationImpl
-import com.example.weather.mvvm.domain.usecase.GetLocationUseCase
+import com.example.weather.mvvm.domain.interactor.WeatherInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class ForecastViewModel : ViewModel() {
+
+    private val interactor = WeatherInteractor(APIService.create())
     private val disposable = CompositeDisposable()
-    private val api=APIService
-    private val location by lazy { LocationImpl() }
-    private val useCase by lazy { GetLocationUseCase(location) }
-    var liveData = MutableLiveData<ForecastList>()
+    private val _forecastLiveData = MutableLiveData<ForecastList>()
+    val forecastLiveData: LiveData<ForecastList> = _forecastLiveData
+    private val _errorLiveData = MutableLiveData<String>()
+    val errorLiveData: LiveData<String> = _errorLiveData
 
-    fun getForecastData() {
-            disposable.add(
-                ObservableRepository(api.create()).forecastData(
-                useCase.execute().latitude.toString(),
-                useCase.execute().longitude.toString())
-                .observeOn(AndroidSchedulers.mainThread())
+    fun getForecastData(lat: String, lon: String) {
+        disposable.add(
+            interactor
+                .getForecastWeather(lat, lon)
                 .subscribeOn(Schedulers.io())
-                .subscribe({
-                    res->liveData.value=res
-                },{
-                    Log.e("AAAA", "Error")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ forecastWeather ->
+                    _forecastLiveData.value = forecastWeather
+                }, {
+                    _errorLiveData.value = it.message
                 })
-            )
-        Log.e("AAAA", useCase.execute().latitude.toString() +" + "+useCase.execute().longitude.toString())
-
+        )
     }
 }

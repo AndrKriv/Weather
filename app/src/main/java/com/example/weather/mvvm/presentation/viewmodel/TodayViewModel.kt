@@ -2,78 +2,83 @@ package com.example.weather.mvvm.presentation.viewmodel
 
 import android.content.Intent
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.weather.R
 import com.example.weather.mvvm.core.TodayInfo
 import com.example.weather.mvvm.data.APIService
-import com.example.weather.mvvm.data.ObservableRepository
-import com.example.weather.mvvm.data.repository.LocationImpl
-import com.example.weather.mvvm.domain.usecase.GetLocationUseCase
-import com.example.weather.mvvm.domain.usecase.GetWeatherPictureUseCase
+import com.example.weather.mvvm.domain.interactor.WeatherInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class TodayViewModel : ViewModel() {
-    val todayInfo = MutableLiveData<TodayInfo>()
+
     private val disposable = CompositeDisposable()
+    private val interactor = WeatherInteractor(APIService.create())
+    private val _todayLiveData = MutableLiveData<TodayInfo>()
+    val todayLiveData:LiveData<TodayInfo> = _todayLiveData
+    private val _errorLiveData = MutableLiveData<String>()
+    val errorLiveData:LiveData<String> = _errorLiveData
 
-    private val location by lazy { LocationImpl() }
-    private val useCase by lazy { GetLocationUseCase(location) }
-    private val image by lazy { GetWeatherPictureUseCase() }
-    private val api = APIService
-
-    fun getTodayData() {
-            disposable.add(ObservableRepository(api.create()).todayData(
-                useCase.execute().latitude.toString(),
-                useCase.execute().longitude.toString()
-                )
-                .observeOn(AndroidSchedulers.mainThread())
+    fun getTodayData(lat: String, lon: String) {
+        disposable.add(
+            interactor
+                .getCurrentWeather(lat, lon)
                 .subscribeOn(Schedulers.io())
-                .subscribe({
-                           res -> todayInfo.value = res
-                           },{
-
-                    Log.e(
-                        "AAA",
-                        it.message.toString()
-                    )
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ currentWeather ->
+                    _todayLiveData.value = currentWeather
+                }, {
+                    _errorLiveData.value = it.message
                 })
-            )
-            Log.e(
-                "AAA",
-                useCase.execute().latitude.toString() + " + " + useCase.execute().longitude.toString()
-            )
-    }
-
-    private fun send(messageText: String) = Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, messageText)
-        type = "text/plain"
-    }
-
-    fun sendInfoChooser(str: String): Intent {
-        return Intent.createChooser(
-            send(str), "Launch"
         )
     }
 
-    fun loadImg():Int{
-        return image.execute(todayInfo.value?.weather?.get(0)?.description.toString())
+    fun sendInfoChooser(messageText: String): Intent {
+        return Intent.createChooser(
+            Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, messageText)
+                type = "text/plain"
+            },
+            "Launch"
+        )
+    }
+
+    fun loadImg(string: String): Int {
+        return when (string) {
+            "ясно" -> R.drawable.sun
+            "пасмурно" -> R.drawable.cloudy
+            "облачно с прояснениями" -> R.drawable.cloud_sun
+            "небольшая облачность" -> R.drawable.cloud
+            "переменная облачность" -> R.drawable.cloud
+            "сильный дождь" -> R.drawable.rain
+            "дождь" -> R.drawable.rain
+            "небольшой дождь" -> R.drawable.rain_small
+            "проливной дождь" -> R.drawable.rain
+            "небольшой снег" -> R.drawable.small_snow
+            "снег" -> R.drawable.snowing
+            "снег с дождем" -> R.drawable.snow_rain
+            "туман" -> R.drawable.fog
+            else -> R.drawable.unknown
+        }
     }
 
     fun stringToShare(
         city: String,
-        degrees: String,
+        degrees: Double,
         description: String,
-        windSpeed: String,
-        humidity: String,
-        pressure: String
+        windSpeed: Double,
+        humidity: Double,
+        pressure: Double
     ) =
         """
     В $city сейчас $degrees°C, на улице $description, скорость ветра $windSpeed м/с.
     Влажность $humidity%, давление $pressure мм рт. ст.
     """.trimIndent()
+
 
     override fun onCleared() {
         super.onCleared()

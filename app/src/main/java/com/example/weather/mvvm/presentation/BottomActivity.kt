@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.databinding.ActivityBottomBinding
+import com.example.weather.mvvm.presentation.fragments.BaseFragment
 
 class BottomActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBottomBinding
