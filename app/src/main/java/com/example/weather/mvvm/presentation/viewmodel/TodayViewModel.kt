@@ -1,7 +1,6 @@
 package com.example.weather.mvvm.presentation.viewmodel
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,9 +17,9 @@ class TodayViewModel : ViewModel() {
     private val disposable = CompositeDisposable()
     private val interactor = WeatherInteractor(APIService.create())
     private val _todayLiveData = MutableLiveData<TodayInfo>()
-    val todayLiveData:LiveData<TodayInfo> = _todayLiveData
+    val todayLiveData: LiveData<TodayInfo> = _todayLiveData
     private val _errorLiveData = MutableLiveData<String>()
-    val errorLiveData:LiveData<String> = _errorLiveData
+    val errorLiveData: LiveData<String> = _errorLiveData
 
     fun getTodayData(lat: String, lon: String) {
         disposable.add(
@@ -36,16 +35,15 @@ class TodayViewModel : ViewModel() {
         )
     }
 
-    fun sendInfoChooser(messageText: String): Intent {
-        return Intent.createChooser(
-            Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, messageText)
-                type = "text/plain"
-            },
-            "Launch"
-        )
-    }
+    fun sendInfoChooser(messageText: String): Intent = Intent.createChooser(
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, messageText)
+            type = "text/plain"
+        },
+        "Launch"
+    )
+
 
     fun loadImg(string: String): Int {
         return when (string) {
@@ -78,10 +76,4 @@ class TodayViewModel : ViewModel() {
     В $city сейчас $degrees°C, на улице $description, скорость ветра $windSpeed м/с.
     Влажность $humidity%, давление $pressure мм рт. ст.
     """.trimIndent()
-
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.e("AAA", "vm cleared")
-    }
 }

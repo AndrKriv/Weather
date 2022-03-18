@@ -23,7 +23,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
 
         todayVM = ViewModelProvider(this)[TodayViewModel::class.java]
         todayVM.getTodayData("55", "30")
-        todayVM.todayLiveData.observe(this, Observer {
+        todayVM.todayLiveData.observe(viewLifecycleOwner, Observer {
             with(binding) {
                 tvCity.text = getString(R.string.city, it.city)
                 tvDate.text = getString(R.string.date, it.date.today())
@@ -37,14 +37,14 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                 ivImg.setImageResource(todayVM.loadImg(it.weather[0].description))
             }
         })
-        todayVM.errorLiveData.observe(this, Observer {
+        todayVM.errorLiveData.observe(viewLifecycleOwner, Observer {
             binding.tvCity.text = it
         })
 
         binding.share.setOnClickListener {
             todayVM.todayLiveData.value?.let {
                 startActivity(
-                    with(it){
+                    with(it) {
                         todayVM.sendInfoChooser(
                             todayVM.stringToShare(
                                 city,
@@ -59,7 +59,6 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                     }
                 )
             } ?: Log.e("AAA", "LiveData is Empty")
-
         }
     }
 }

@@ -21,10 +21,10 @@ class ForecastFragment : Fragment(R.layout.fragment_forecast) {
         val forecastAdapter = ForecastAdapter()
         forecastVM = ViewModelProvider(this).get(ForecastViewModel::class.java)
         forecastVM.getForecastData("55", "30")
-        forecastVM.forecastLiveData.observe(this, Observer {
+        forecastVM.forecastLiveData.observe(viewLifecycleOwner, Observer {
             forecastAdapter.setItems(it.list)
         })
-        forecastVM.errorLiveData.observe(this, Observer {
+        forecastVM.errorLiveData.observe(viewLifecycleOwner, Observer {
         })
         binding.forecastRecyclerView.adapter = forecastAdapter
     }

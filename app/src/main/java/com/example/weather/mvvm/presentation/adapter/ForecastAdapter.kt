@@ -17,15 +17,14 @@ class ForecastViewHolder(private val binding: ItemForecastBinding) :
             timeTv.text = item.time.toDate()
             degreesTv.text = item.temp.degrees
             descriptionTv.text = item.weather.single().description
-            weatherImg.setImageResource(TodayViewModel().loadImg(item.weather.single().description)
-            )
+            weatherImg.setImageResource(TodayViewModel().loadImg(item.weather.single().description))
         }
     }
 }
 
 class ForecastAdapter : RecyclerView.Adapter<ForecastViewHolder>() {
 
-    private val forecastList = mutableListOf<ForecastInfo>()
+    private val items = mutableListOf<ForecastInfo>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder =
         ForecastViewHolder(
@@ -37,14 +36,14 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastViewHolder>() {
         )
 
     override fun onBindViewHolder(holder: ForecastViewHolder, position: Int) =
-        holder.bindView(forecastList[position])
+        holder.bindView(items[position])
 
-    override fun getItemCount() = forecastList.size
+    override fun getItemCount() = items.size
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<ForecastInfo>) {
-        forecastList.clear()
-        forecastList.addAll(items)
+        this.items.clear()
+        this.items.addAll(items)
         notifyDataSetChanged()
     }
 }

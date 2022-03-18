@@ -12,15 +12,15 @@ class WeatherInteractor(private val apiService: APIService) {
         apiService.getTodayData(
             lat, lon,
             Constants.KEY,
-            Constants.units,
-            Constants.lang
+            Constants.UNITS,
+            Constants.LANG
         )
 
     fun getForecastWeather(lat: String, lon: String): Single<ForecastList> =
         apiService.getForecastData(
             lat, lon,
             Constants.KEY,
-            Constants.units,
-            Constants.lang
+            Constants.UNITS,
+            Constants.LANG
         )
 }

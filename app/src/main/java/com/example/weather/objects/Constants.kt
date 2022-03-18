@@ -6,6 +6,6 @@ object Constants {
     const val longitude = "lon"
     const val REQUEST_PERMISSION_LOCATION = 1000
     const val KEY: String = "0cb9d40b9e13129cc06ee1089c96d455"
-    const val units = "metric"
-    const val lang = "ru"
+    const val UNITS = "metric"
+    const val LANG = "ru"
 }
