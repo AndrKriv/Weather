@@ -1,4 +1,4 @@
 package com.example.weather.degreesCheck
 
-    fun Int.convertPressure() = (this / 1.33).toInt().toString()
+    fun String.convertPressure() = (this.toInt() / 1.33).toInt().toString()
 

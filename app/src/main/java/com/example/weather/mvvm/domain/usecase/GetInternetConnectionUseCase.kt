@@ -1,12 +1,13 @@
-package com.example.weather.connection
+package com.example.weather.mvvm.domain.usecase
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 
-open class CheckConnection {
-    fun isInternetChecking(context: Context): Boolean {
+class GetInternetConnectionUseCase(private val context: Context) {
+
+    fun execute(): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -18,7 +19,8 @@ open class CheckConnection {
                 else -> false
             }
         } else {
-            @Suppress("DEPRECATION") val networkInfo =
+            @Suppress("DEPRECATION")
+            val networkInfo =
                 connectivityManager.activeNetworkInfo ?: return false
             @Suppress("DEPRECATION")
             return networkInfo.isConnected

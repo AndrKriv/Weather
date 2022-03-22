@@ -5,7 +5,7 @@
     android:id="@+id/fragment_forecast"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.forecast.ForecastFragment">
+    tools:context=".mvvm.presentation.fragments.ForecastFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/forecast_recycler_view"

@@ -1,4 +1,4 @@
-package com.example.weather.ui
+package com.example.weather.mvvm.domain
 
 import android.view.View
 import androidx.fragment.app.Fragment

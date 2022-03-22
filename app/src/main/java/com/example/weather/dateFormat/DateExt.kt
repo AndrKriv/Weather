@@ -1,5 +1,6 @@
 package com.example.weather.dateFormat
 
+import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -13,7 +14,5 @@ fun String.toDate(): String {
     return newDateFormat.format(date)
 }
 
-fun today(): String = SimpleDateFormat(DATE_FORMAT_PATTERN).format(Date())
-
-
-
+@SuppressLint("SimpleDateFormat")
+fun String.today(): String = SimpleDateFormat(DATE_FORMAT_PATTERN).format(Date())
