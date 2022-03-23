@@ -21,6 +21,7 @@ class TodayViewModel : ViewModel() {
     private val _errorLiveData = MutableLiveData<String>()
     val errorLiveData: LiveData<String> = _errorLiveData
 
+
     fun getTodayData(lat: String, lon: String) {
         disposable.add(
             interactor
@@ -43,7 +44,6 @@ class TodayViewModel : ViewModel() {
         },
         "Launch"
     )
-
 
     fun loadImg(string: String): Int {
         return when (string) {
