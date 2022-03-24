@@ -1,10 +1,6 @@
 package com.example.weather.mvvm.presentation.fragments
 
-import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather.R
@@ -20,16 +16,7 @@ class TodayFragment : BaseFragment() {
     private val binding: FragmentTodayBinding by viewBinding(FragmentTodayBinding::bind)
     private lateinit var todayVM: TodayViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.fragment_today, container, false)
-    }
-
-    override fun onReadWeather(latitude: String, longitude: String) {
+    override fun onWeatherDataReceived(latitude: String, longitude: String) {
         todayVM = ViewModelProvider(this)[TodayViewModel::class.java]
         todayVM.getTodayData(latitude, longitude)
         todayVM.todayLiveData.observe(viewLifecycleOwner, Observer {
