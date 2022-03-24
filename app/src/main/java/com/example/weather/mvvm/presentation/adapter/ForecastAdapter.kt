@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.databinding.ItemForecastBinding
-import com.example.weather.dateFormat.toDate
+import com.example.weather.utils.toDate
 import com.example.weather.mvvm.core.ForecastInfo
 import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
 

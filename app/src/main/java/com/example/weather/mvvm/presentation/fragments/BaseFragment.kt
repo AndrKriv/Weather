@@ -2,25 +2,22 @@ package com.example.weather.mvvm.presentation.fragments
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
-import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
+import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.example.weather.R
-import com.example.weather.objects.Constants
+import com.example.weather.utils.Constants
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 
-abstract class BaseFragment : Fragment() {
-
+abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
 
@@ -30,13 +27,7 @@ abstract class BaseFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        return getInflater(inflater, container)
-    }
-
-    private fun getInflater(inflater: LayoutInflater, container: ViewGroup?): View {
-        return if (ForecastFragment().javaClass.name == javaClass.name)
-            inflater.inflate(R.layout.fragment_forecast, container, false)
-        else inflater.inflate(R.layout.fragment_today, container, false)
+        return inflater.inflate(layoutId, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,37 +59,40 @@ abstract class BaseFragment : Fragment() {
     abstract fun onWeatherDataReceived(latitude: String, longitude: String)
 
     private fun requestPermissionsIfNeeded(): Boolean {
-        return if (checkPermissions(requireContext())) {
-            if (isLocationEnabled(requireContext())) {
-                true
-            } else {
-                showAlertMessageNoGps(requireContext())
-                false
-            }
+        return if (checkPermissions()) {
+            return true
         } else {
             showPermissionWindowToUser(requireActivity())
             false
         }
     }
 
-    private fun checkPermissions(
-        context: Context
-    ): Boolean {
+    private fun checkPermissions(): Boolean {
         if (
-            checkSelfPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, context) ||
-            checkSelfPermissions(Manifest.permission.ACCESS_FINE_LOCATION, context)
+            checkSelfPermissions(Manifest.permission.ACCESS_COARSE_LOCATION) ||
+            checkSelfPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         ) {
+            val builder = LocationSettingsRequest.Builder()
+            builder.addLocationRequest(LocationRequest())
+            val task = LocationServices.getSettingsClient(requireContext())
+                .checkLocationSettings(builder.build())
+            task.addOnCompleteListener { result ->
+                try {
+                    result.getResult(ApiException::class.java)
+                } catch (e: ResolvableApiException) {
+                    e.startResolutionForResult(requireActivity(), Constants.REQUEST_CODE)
+                }
+            }
             return true
         }
         return false
     }
 
-    private fun checkSelfPermissions(permissions: String, context: Context): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            context,
-            permissions
+    private fun checkSelfPermissions(permission: String): Boolean =
+        ActivityCompat.checkSelfPermission(
+            requireContext(),
+            permission
         ) == PackageManager.PERMISSION_GRANTED
-    }
 
     private fun showPermissionWindowToUser(activity: Activity) {
         ActivityCompat.requestPermissions(
@@ -109,30 +103,6 @@ abstract class BaseFragment : Fragment() {
             ),
             Constants.REQUEST_CODE
         )
-    }
-
-    private fun isLocationEnabled(context: Context): Boolean {
-        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
-
-    private fun showAlertMessageNoGps(context: Context) {
-        val builder = AlertDialog.Builder(context)
-        builder.setMessage(getString(R.string.location))
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                context.startActivity(
-                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                )
-            }
-            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
-                dialog.cancel()
-                showAlertMessageNoGps(context)
-            }
-        val alert: AlertDialog = builder.create()
-        alert.show()
     }
 
     override fun onRequestPermissionsResult(

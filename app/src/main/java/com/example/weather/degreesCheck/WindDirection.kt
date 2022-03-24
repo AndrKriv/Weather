@@ -3,9 +3,9 @@ package com.example.weather.degreesCheck
 import android.content.Context
 import com.example.weather.R
 
-fun Context.toWindDirection(degrees: Int): String {
+fun Int.toWindDirection(context: Context): String {
     val windDirection =
-        when (degrees) {
+        when (this) {
             in 1..89 -> R.string.ne
             in 91..179 -> R.string.se
             in 181..269 -> R.string.sw
@@ -15,5 +15,5 @@ fun Context.toWindDirection(degrees: Int): String {
             270 -> R.string.west
             else -> R.string.north
         }
-    return getString(windDirection)
+    return context.getString(windDirection)
 }
