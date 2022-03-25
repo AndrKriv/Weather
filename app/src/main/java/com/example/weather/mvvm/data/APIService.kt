@@ -2,6 +2,7 @@ package com.example.weather.mvvm.data
 
 import com.example.weather.mvvm.core.ForecastList
 import com.example.weather.mvvm.core.TodayInfo
+import com.example.weather.utils.Constants
 import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -32,7 +33,7 @@ interface APIService {
     companion object Factory {
         fun create(): APIService {
             return Retrofit.Builder()
-                .baseUrl("https://api.openweathermap.org/data/2.5/")
+                .baseUrl(Constants.BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build().create(APIService::class.java)

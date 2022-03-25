@@ -2,7 +2,7 @@ package com.example.weather.mvvm.presentation.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather.R
@@ -11,7 +11,7 @@ import com.example.weather.mvvm.domain.viewBinding
 import com.example.weather.mvvm.presentation.adapter.ForecastAdapter
 import com.example.weather.mvvm.presentation.viewmodel.ForecastViewModel
 
-class ForecastFragment : Fragment(R.layout.fragment_forecast) {
+class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
     private val binding: FragmentForecastBinding by viewBinding(FragmentForecastBinding::bind)
     private lateinit var forecastVM: ForecastViewModel
@@ -19,13 +19,17 @@ class ForecastFragment : Fragment(R.layout.fragment_forecast) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val forecastAdapter = ForecastAdapter()
-        forecastVM = ViewModelProvider(this).get(ForecastViewModel::class.java)
-        forecastVM.getForecastData("55", "30")
-        forecastVM.forecastLiveData.observe(viewLifecycleOwner, Observer {
-            forecastAdapter.setItems(it.list)
-        })
-        forecastVM.errorLiveData.observe(viewLifecycleOwner, Observer {
-        })
         binding.forecastRecyclerView.adapter = forecastAdapter
+        forecastVM = ViewModelProvider(this).get(ForecastViewModel::class.java)
+        forecastVM.forecastLiveData.observe(viewLifecycleOwner) {
+            forecastAdapter.setItems(it.list)
+        }
+        forecastVM.errorLiveData.observe(viewLifecycleOwner, Observer {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    override fun onWeatherDataReceived(latitude: String, longitude: String) {
+        forecastVM.getForecastData(latitude, longitude)
     }
 }

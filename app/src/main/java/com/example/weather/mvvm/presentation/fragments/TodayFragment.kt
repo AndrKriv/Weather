@@ -3,26 +3,24 @@ package com.example.weather.mvvm.presentation.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather.R
 import com.example.weather.databinding.FragmentTodayBinding
-import com.example.weather.dateFormat.today
-import com.example.weather.degreesCheck.convertPressure
+import com.example.weather.utils.today
+import com.example.weather.utils.convertPressure
 import com.example.weather.degreesCheck.toWindDirection
 import com.example.weather.mvvm.domain.viewBinding
 import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
 
-class TodayFragment : Fragment(R.layout.fragment_today) {
+class TodayFragment : BaseFragment(R.layout.fragment_today) {
+
     private val binding: FragmentTodayBinding by viewBinding(FragmentTodayBinding::bind)
     private lateinit var todayVM: TodayViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         todayVM = ViewModelProvider(this)[TodayViewModel::class.java]
-        todayVM.getTodayData("55", "30")
         todayVM.todayLiveData.observe(viewLifecycleOwner, Observer {
             with(binding) {
                 tvCity.text = getString(R.string.city, it.city)
@@ -30,8 +28,9 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                 tvTemp.text = getString(R.string.temp, it.main.temp)
                 tvDescription.text = it.weather[0].description
                 tvHumidity.text = getString(R.string.humidity, it.main.humidity)
-                tvPressure.text = getString(R.string.pressure, it.main.pressure.convertPressure())
-                val windDirection = requireContext().toWindDirection(it.wind.deg)
+                tvPressure.text =
+                    getString(R.string.pressure, it.main.pressure.convertPressure())
+                val windDirection = it.wind.deg.toWindDirection(requireContext())
                 tvWind.text = getString(R.string.wind, windDirection)
                 tvWindSpeed.text = getString(R.string.wind_speed, it.wind.speed)
                 ivImg.setImageResource(todayVM.loadImg(it.weather[0].description))
@@ -40,7 +39,6 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         todayVM.errorLiveData.observe(viewLifecycleOwner, Observer {
             binding.tvCity.text = it
         })
-
         binding.share.setOnClickListener {
             todayVM.todayLiveData.value?.let {
                 startActivity(
@@ -60,5 +58,9 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                 )
             } ?: Log.e("AAA", "LiveData is Empty")
         }
+    }
+
+    override fun onWeatherDataReceived(latitude: String, longitude: String) {
+        todayVM.getTodayData(latitude, longitude)
     }
 }

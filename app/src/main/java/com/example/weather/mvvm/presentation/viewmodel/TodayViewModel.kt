@@ -44,7 +44,6 @@ class TodayViewModel : ViewModel() {
         "Launch"
     )
 
-
     fun loadImg(string: String): Int {
         return when (string) {
             "ясно" -> R.drawable.sun

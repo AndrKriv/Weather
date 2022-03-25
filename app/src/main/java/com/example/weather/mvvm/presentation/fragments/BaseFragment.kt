@@ -1,136 +1,127 @@
 package com.example.weather.mvvm.presentation.fragments
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.example.weather.utils.Constants
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 
-class BaseFragment() : Fragment() {
-
-//    private fun isLocationPermissionGranted(context: Context, activity: Activity): Boolean {
-//
-//        return if (ActivityCompat.checkSelfPermission(
-//                context,
-//                android.Manifest.permission.ACCESS_COARSE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                context,
-//                android.Manifest.permission.ACCESS_FINE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            ActivityCompat.requestPermissions(
-//                activity,
-//                arrayOf(
-//                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-//                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-//                ),
-//                42
-//                //requestcode
-//            )
-//            false
-//        } else {
-//            true
-//        }
-//    }
-
-
-    // declare a global variable FusedLocationProviderClient
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-    // globally declare LocationRequest
-    private lateinit var locationRequest: LocationRequest
-
-    // globally declare LocationCallback
+abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // in onCreate() initialize FusedLocationProviderClient
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
-
-        getLocationUpdates()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+        return inflater.inflate(layoutId, container, false)
     }
 
-
-    /**
-     * call this method in onCreate
-     * onLocationResult call when location is changed
-     */
-    private fun getLocationUpdates() {
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
-        locationRequest = LocationRequest()
-        locationRequest.interval = 50000
-        locationRequest.fastestInterval = 50000
-        locationRequest.smallestDisplacement = 170f // 170 m = 0.1 mile
-        locationRequest.priority =
-            LocationRequest.PRIORITY_HIGH_ACCURACY //set according to your app function
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                locationResult ?: return
-
-                if (locationResult.locations.isNotEmpty()) {
-                    // get latest location
-                    val location =
-                        locationResult.lastLocation
-                    // use your location object
-                    // get latitude , longitude and other info from this
-
-                    Log.e("AAA", "${location.latitude} + ${location.longitude}")
+                super.onLocationResult(locationResult)
+                for (loc in locationResult.locations) {
+                    onWeatherDataReceived(loc.latitude.toString(), loc.longitude.toString())
                 }
-
-
             }
         }
     }
 
-    //start location updates
-    private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
+    override fun onResume() {
+        super.onResume()
+        if (requestPermissionsIfNeeded()) {
+            startLocationUpdates()
         }
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback,
-            Looper.getMainLooper()
-        )
     }
 
-    // stop location updates
-    private fun stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
-    }
-
-    // stop receiving location update when activity not visible/foreground
     override fun onPause() {
         super.onPause()
         stopLocationUpdates()
     }
 
-    // start receiving location update when activity  visible/foreground
-    override fun onResume() {
-        super.onResume()
-        startLocationUpdates()
+    abstract fun onWeatherDataReceived(latitude: String, longitude: String)
+
+    private fun requestPermissionsIfNeeded(): Boolean {
+        return if (checkPermissions()) {
+            return true
+        } else {
+            showPermissionWindowToUser(requireActivity())
+            false
+        }
     }
 
+    private fun checkPermissions(): Boolean {
+        if (
+            checkSelfPermissions(Manifest.permission.ACCESS_COARSE_LOCATION) ||
+            checkSelfPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        ) {
+            val builder = LocationSettingsRequest.Builder()
+            builder.addLocationRequest(LocationRequest())
+            val task = LocationServices.getSettingsClient(requireContext())
+                .checkLocationSettings(builder.build())
+            task.addOnCompleteListener { result ->
+                try {
+                    result.getResult(ApiException::class.java)
+                } catch (e: ResolvableApiException) {
+                    e.startResolutionForResult(requireActivity(), Constants.REQUEST_CODE)
+                }
+            }
+            return true
+        }
+        return false
+    }
 
+    private fun checkSelfPermissions(permission: String): Boolean =
+        ActivityCompat.checkSelfPermission(
+            requireContext(),
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+
+    private fun showPermissionWindowToUser(activity: Activity) {
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ),
+            Constants.REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(Constants.REQUEST_CODE, permissions, grantResults)
+    }
+
+    private fun startLocationUpdates() {
+        fusedLocationProviderClient.requestLocationUpdates(
+            LocationRequest(),
+            locationCallback,
+            Looper.getMainLooper()
+        )
+    }
+
+    private fun stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+    }
 }

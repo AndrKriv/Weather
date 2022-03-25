@@ -14,12 +14,6 @@
     <string name="no">Нет</string>
     <string name="error">Возникла ошибка загрузки данных, попробуйте перезагрузить приложение</string>
     <string name="tap">Нажмите на пункт Today в панели навигации</string>
-    <string-array name="wind">
-        <item>СВ</item>
-        <item>ЮВ</item>
-        <item>ЮЗ</item>
-        <item>СЗ</item>
-    </string-array>
     <string name="ne">СВ</string>
     <string name="se">ЮВ</string>
     <string name="sw">ЮЗ</string>
