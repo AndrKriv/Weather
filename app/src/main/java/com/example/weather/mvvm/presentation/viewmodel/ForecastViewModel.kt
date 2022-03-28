@@ -4,15 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.weather.mvvm.core.ForecastList
-import com.example.weather.mvvm.data.APIService
 import com.example.weather.mvvm.domain.interactor.WeatherInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-class ForecastViewModel : ViewModel() {
+class ForecastViewModel @Inject constructor(private val interactor: WeatherInteractor) :
+    ViewModel() {
 
-    private val interactor = WeatherInteractor(APIService.create())
     private val disposable = CompositeDisposable()
     private val _forecastLiveData = MutableLiveData<ForecastList>()
     val forecastLiveData: LiveData<ForecastList> = _forecastLiveData
@@ -21,8 +21,7 @@ class ForecastViewModel : ViewModel() {
 
     fun getForecastData(lat: String, lon: String) {
         disposable.add(
-            interactor
-                .getForecastWeather(lat, lon)
+            interactor.getForecastWeather(lat, lon)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ forecastWeather ->
