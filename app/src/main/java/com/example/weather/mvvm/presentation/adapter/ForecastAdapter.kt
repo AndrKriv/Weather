@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.databinding.ItemForecastBinding
-import com.example.weather.utils.toDate
 import com.example.weather.mvvm.core.ForecastInfo
-import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
+import com.example.weather.utils.loadImg
+import com.example.weather.utils.toDate
 
 class ForecastViewHolder(private val binding: ItemForecastBinding) :
     RecyclerView.ViewHolder(binding.root) {
@@ -17,7 +17,9 @@ class ForecastViewHolder(private val binding: ItemForecastBinding) :
             timeTv.text = item.time.toDate()
             degreesTv.text = item.temp.degrees
             descriptionTv.text = item.weather.single().description
-            weatherImg.setImageResource(TodayViewModel().loadImg(item.weather.single().description))
+            weatherImg.setImageResource(
+                loadImg(item.weather.single().description)
+            )
         }
     }
 }

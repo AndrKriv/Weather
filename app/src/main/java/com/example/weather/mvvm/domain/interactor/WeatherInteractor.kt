@@ -2,12 +2,12 @@ package com.example.weather.mvvm.domain.interactor
 
 import com.example.weather.mvvm.core.ForecastList
 import com.example.weather.mvvm.core.TodayInfo
-import com.example.weather.mvvm.data.APIService
+import com.example.weather.mvvm.data.ApiService
 import com.example.weather.utils.Constants
 import io.reactivex.Single
+import javax.inject.Inject
 
-class WeatherInteractor constructor(private val apiService: APIService) {
-
+class WeatherInteractor @Inject constructor(private val apiService: ApiService) {
     fun getCurrentWeather(lat: String, lon: String): Single<TodayInfo> =
         apiService.getTodayData(
             lat, lon,

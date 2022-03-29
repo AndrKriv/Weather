@@ -26,7 +26,6 @@
     <string name="share">Поделиться</string>
     <string name="weather">Погода</string>
     <string name="sharing">Было отправлено с помощью приложения Weather</string>
-
     <string name="city">Город: %s</string>
     <string name="date">Дата: %s</string>
     <string name="temp">Температура: %s °C</string>

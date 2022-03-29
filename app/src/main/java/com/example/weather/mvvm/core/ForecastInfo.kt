@@ -8,6 +8,7 @@ data class ForecastList(
     @Expose
     var list: List<ForecastInfo>
 )
+
 data class ForecastInfo(
     @SerializedName("dt_txt")
     val time: String,
@@ -18,11 +19,13 @@ data class ForecastInfo(
     @Expose
     var temp: Temp
 )
-data class Description (
+
+data class Description(
     @SerializedName("description")
     @Expose
     val description: String
 )
+
 data class Temp(
     @SerializedName("temp")
     @Expose

@@ -3,25 +3,24 @@ package com.example.weather.mvvm.presentation.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather.R
 import com.example.weather.databinding.FragmentTodayBinding
-import com.example.weather.utils.today
-import com.example.weather.utils.convertPressure
-import com.example.weather.degreesCheck.toWindDirection
+import com.example.weather.di.component.DaggerAppComponent
 import com.example.weather.mvvm.domain.viewBinding
+import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
+import com.example.weather.utils.*
 
 class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
     private val binding: FragmentTodayBinding by viewBinding(FragmentTodayBinding::bind)
-    private lateinit var todayVM: TodayViewModel
+    private val todayViewModel: TodayViewModel by viewModels { viewModelFactory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        todayVM = ViewModelProvider(this)[TodayViewModel::class.java]
-        todayVM.todayLiveData.observe(viewLifecycleOwner, Observer {
+        todayViewModel.todayLiveData.observe(viewLifecycleOwner) {
             with(binding) {
                 tvCity.text = getString(R.string.city, it.city)
                 tvDate.text = getString(R.string.date, it.date.today())
@@ -33,18 +32,18 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
                 val windDirection = it.wind.deg.toWindDirection(requireContext())
                 tvWind.text = getString(R.string.wind, windDirection)
                 tvWindSpeed.text = getString(R.string.wind_speed, it.wind.speed)
-                ivImg.setImageResource(todayVM.loadImg(it.weather[0].description))
+                ivImg.setImageResource(loadImg(it.weather[0].description))
             }
-        })
-        todayVM.errorLiveData.observe(viewLifecycleOwner, Observer {
-            binding.tvCity.text = it
-        })
+        }
+        todayViewModel.errorLiveData.observe(viewLifecycleOwner) {
+            binding.tvCity.text = getString(R.string.connection)
+        }
         binding.share.setOnClickListener {
-            todayVM.todayLiveData.value?.let {
+            todayViewModel.todayLiveData.value?.let {
                 startActivity(
                     with(it) {
-                        todayVM.sendInfoChooser(
-                            todayVM.stringToShare(
+                        todayViewModel.sendInfoChooser(
+                            todayViewModel.stringToShare(
                                 city,
                                 main.temp.toDouble(),
                                 weather.get(0).description,
@@ -60,7 +59,14 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App)
+            .appComponent
+            .inject(this)
+    }
+
     override fun onWeatherDataReceived(latitude: String, longitude: String) {
-        todayVM.getTodayData(latitude, longitude)
+        todayViewModel.getTodayData(latitude, longitude)
     }
 }

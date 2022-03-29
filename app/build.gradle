@@ -1,7 +1,7 @@
 plugins {
+    id 'kotlin-kapt'
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
 }
 
 android {
@@ -33,6 +33,9 @@ android {
 
     buildFeatures {
         viewBinding true
+    }
+    kapt {
+        generateStubs = true
     }
 }
 def mvvmVersion = '2.4.1'

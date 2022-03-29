@@ -1,4 +1,4 @@
-package com.example.weather.degreesCheck
+package com.example.weather.utils
 
 import android.content.Context
 import com.example.weather.R
