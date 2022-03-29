@@ -35,7 +35,7 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App)
-            .daggerAppComponent
+            .appComponent
             .inject(this)
     }
 

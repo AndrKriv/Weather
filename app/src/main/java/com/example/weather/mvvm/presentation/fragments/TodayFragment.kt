@@ -62,7 +62,7 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireContext().applicationContext as App)
-            .daggerAppComponent
+            .appComponent
             .inject(this)
     }
 
