@@ -11,14 +11,18 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.example.weather.mvvm.presentation.factory.ViewModelFactory
 import com.example.weather.utils.Constants
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import javax.inject.Inject
 
 abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+    @Inject
+    lateinit var viewModelsFactory: ViewModelFactory
 
     override fun onCreateView(
         inflater: LayoutInflater,

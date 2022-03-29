@@ -8,12 +8,8 @@ import com.example.weather.databinding.ItemForecastBinding
 import com.example.weather.mvvm.core.ForecastInfo
 import com.example.weather.utils.loadImg
 import com.example.weather.utils.toDate
-import javax.inject.Inject
 
-class ForecastViewHolder @Inject constructor(
-    private val binding: ItemForecastBinding
-    //,private val api: ApiService
-) :
+class ForecastViewHolder(private val binding: ItemForecastBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bindView(item: ForecastInfo) {

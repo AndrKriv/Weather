@@ -8,7 +8,11 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        DaggerAppComponent.builder().application(this).baseUrl(Constants.BASE_URL).build()
+        DaggerAppComponent
+            .builder()
+            .application(this)
+            .baseUrl(Constants.BASE_URL)
+            .build()
             .inject(this)
     }
 }

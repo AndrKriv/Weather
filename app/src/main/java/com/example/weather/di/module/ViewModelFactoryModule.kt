@@ -13,7 +13,6 @@ class ViewModelFactoryModule {
 
     @Provides
     @Singleton
-    fun viewModelFactory(providerMap: Map<Class<out ViewModel>, Provider<ViewModel>>): ViewModelProvider.Factory {
-        return ViewModelFactory(providerMap)
-    }
+    fun viewModelFactory(providerMap: Map<Class<out ViewModel>, Provider<ViewModel>>): ViewModelProvider.Factory =
+        ViewModelFactory(providerMap)
 }

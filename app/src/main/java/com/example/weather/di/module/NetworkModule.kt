@@ -14,7 +14,9 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(@Named("baseUrl") baseUrl: String): Retrofit = Retrofit.Builder()
+    fun provideRetrofit(@Named("baseUrl") baseUrl: String): Retrofit =
+        Retrofit
+        .Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .baseUrl(baseUrl)
@@ -23,5 +25,4 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
-
 }
