@@ -3,6 +3,7 @@ package com.example.weather.mvvm.presentation.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather.R
 import com.example.weather.databinding.FragmentTodayBinding
@@ -15,11 +16,10 @@ import com.example.weather.utils.*
 class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
     private val binding: FragmentTodayBinding by viewBinding(FragmentTodayBinding::bind)
-    lateinit var todayViewModel: TodayViewModel
+    private val todayViewModel: TodayViewModel by viewModels { viewModelFactory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        todayViewModel = ViewModelProvider(this, viewModelsFactory).get(TodayViewModel::class.java)
         todayViewModel.todayLiveData.observe(viewLifecycleOwner) {
             with(binding) {
                 tvCity.text = getString(R.string.city, it.city)
@@ -61,11 +61,8 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DaggerAppComponent
-            .builder()
-            .application(App())
-            .baseUrl(Constants.BASE_URL)
-            .build()
+        (requireContext().applicationContext as App)
+            .daggerAppComponent
             .inject(this)
     }
 

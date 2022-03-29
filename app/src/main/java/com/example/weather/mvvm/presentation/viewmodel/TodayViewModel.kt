@@ -9,8 +9,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class TodayViewModel @Inject constructor(private val interactor: WeatherInteractor) :
-    BaseViewModel() {
+class TodayViewModel @Inject constructor(
+    private val interactor: WeatherInteractor
+    ) : BaseViewModel() {
 
     private val _todayLiveData = MutableLiveData<TodayInfo>()
     val todayLiveData: LiveData<TodayInfo> = _todayLiveData
@@ -18,14 +19,16 @@ class TodayViewModel @Inject constructor(private val interactor: WeatherInteract
     val errorLiveData: LiveData<String> = _errorLiveData
 
     fun getTodayData(lat: String, lon: String) {
-        interactor.getCurrentWeather(lat, lon)
+        interactor
+            .getCurrentWeather(lat, lon)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ currentWeather ->
                 _todayLiveData.value = currentWeather
             }, {
                 _errorLiveData.value = it.message
-            }).addToDisposable()
+            })
+            .addToDisposable()
     }
 
     fun sendInfoChooser(messageText: String): Intent = Intent.createChooser(

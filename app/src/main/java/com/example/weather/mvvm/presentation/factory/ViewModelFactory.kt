@@ -10,8 +10,8 @@ import javax.inject.Singleton
 @Singleton
 class ViewModelFactory @Inject constructor(
     private val viewModelMap: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
-) :
-    ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val creator = viewModelMap[modelClass] ?: viewModelMap.entries.firstOrNull {
             modelClass.isAssignableFrom(it.key)

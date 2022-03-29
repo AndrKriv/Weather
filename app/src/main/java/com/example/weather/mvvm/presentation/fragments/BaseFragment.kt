@@ -22,7 +22,7 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     @Inject
-    lateinit var viewModelsFactory: ViewModelFactory
+    lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreateView(
         inflater: LayoutInflater,

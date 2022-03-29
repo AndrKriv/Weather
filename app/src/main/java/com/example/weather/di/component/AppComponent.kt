@@ -22,12 +22,11 @@ interface AppComponent {
         fun application(application: Application): Builder
 
         @BindsInstance
-        fun baseUrl(@Named("baseUrl") baseUrl: String): Builder
+        fun baseUrl(baseUrl: String): Builder
 
         fun build(): AppComponent
     }
 
-    fun inject(app: App)
     fun inject(todayFragment: TodayFragment)
     fun inject(forecastFragment: ForecastFragment)
 }

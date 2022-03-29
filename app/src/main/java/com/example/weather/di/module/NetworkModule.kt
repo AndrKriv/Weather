@@ -14,7 +14,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(@Named("baseUrl") baseUrl: String): Retrofit =
+    fun provideRetrofit(baseUrl: String): Retrofit =
         Retrofit
         .Builder()
         .addConverterFactory(GsonConverterFactory.create())

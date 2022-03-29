@@ -18,13 +18,15 @@ class ForecastViewModel @Inject constructor(
     val errorLiveData: LiveData<String> = _errorLiveData
 
     fun getForecastData(lat: String, lon: String) {
-        interactor.getForecastWeather(lat, lon)
+        interactor
+            .getForecastWeather(lat, lon)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ forecastWeather ->
                 _forecastLiveData.value = forecastWeather
             }, {
                 _errorLiveData.value = it.message
-            }).addToDisposable()
+            })
+            .addToDisposable()
     }
 }

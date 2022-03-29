@@ -16,7 +16,7 @@ import com.example.weather.utils.Constants
 class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
     private val binding: FragmentForecastBinding by viewBinding(FragmentForecastBinding::bind)
-    private val forecastViewModel: ForecastViewModel by viewModels { viewModelsFactory }
+    private val forecastViewModel: ForecastViewModel by viewModels { viewModelFactory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,11 +34,8 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DaggerAppComponent
-            .builder()
-            .application(App())
-            .baseUrl(Constants.BASE_URL)
-            .build()
+        (requireContext().applicationContext as App)
+            .daggerAppComponent
             .inject(this)
     }
 
