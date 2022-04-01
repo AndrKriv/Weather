@@ -31,5 +31,5 @@ interface AppComponent {
 
     fun inject(todayFragment: TodayFragment)
     fun inject(forecastFragment: ForecastFragment)
-    fun inject(bottomActivity: BottomActivity)
+    fun inject(app: App)
 }
