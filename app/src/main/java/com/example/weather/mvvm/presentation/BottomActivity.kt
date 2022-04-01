@@ -8,10 +8,14 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.weather.databinding.ActivityBottomBinding
 import com.example.weather.mvvm.domain.connection.NetworkStateManager
 import com.example.weather.mvvm.presentation.app.App
+import javax.inject.Inject
 
 class BottomActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBottomBinding
+
+    @Inject
+    lateinit var networkStateManager: NetworkStateManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +30,9 @@ class BottomActivity : AppCompatActivity() {
             .appComponent
             .inject(this)
 
-        NetworkStateManager
-            .getInstance()
-            ?.getNetworkConnectivityStatus()
-            ?.observe(this) { isConnected ->
+        networkStateManager
+            .getNetworkConnectivityStatus()
+            .observe(this) { isConnected ->
                 showErrorMessage(isConnected)
             }
     }

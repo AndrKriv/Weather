@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import com.example.weather.di.component.AppComponent
 import com.example.weather.di.component.DaggerAppComponent
 import com.example.weather.mvvm.domain.connection.NetworkMonitoringUtil
+import com.example.weather.mvvm.domain.connection.NetworkStateManager
 import com.example.weather.utils.Constants
 import javax.inject.Inject
 
@@ -16,6 +17,9 @@ class App : Application() {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
+    @Inject
+    lateinit var networkStateManager: NetworkStateManager
+
     override fun onCreate() {
         super.onCreate()
         DaggerAppComponent
@@ -25,7 +29,7 @@ class App : Application() {
             .build()
             .also { appComponent = it }.inject(this)
 
-        networkMonitoringUtil = NetworkMonitoringUtil(connectivityManager)
+        networkMonitoringUtil = NetworkMonitoringUtil(connectivityManager, networkStateManager)
         networkMonitoringUtil?.checkNetworkState()
         networkMonitoringUtil?.registerNetworkCallbackEvents()
     }

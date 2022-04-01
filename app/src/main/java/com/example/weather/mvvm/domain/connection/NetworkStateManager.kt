@@ -6,17 +6,7 @@ import androidx.lifecycle.MutableLiveData
 
 class NetworkStateManager {
 
-    companion object {
-        private var networkStateManager: NetworkStateManager? = null
-        private val networkStatusLiveData = MutableLiveData<Boolean?>()
-
-        fun getInstance(): NetworkStateManager? {
-            if (networkStateManager == null) {
-                networkStateManager = NetworkStateManager()
-            }
-            return networkStateManager
-        }
-    }
+    private val networkStatusLiveData = MutableLiveData<Boolean?>()
 
     fun setNetworkConnectivityStatus(connectivityStatus: Boolean) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
