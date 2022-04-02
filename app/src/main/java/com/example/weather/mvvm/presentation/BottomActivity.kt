@@ -1,8 +1,8 @@
 package com.example.weather.mvvm.presentation
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.databinding.ActivityBottomBinding
@@ -30,18 +30,8 @@ class BottomActivity : AppCompatActivity() {
             .appComponent
             .inject(this)
 
-        networkStateManager
-            .getNetworkConnectivityStatus()
-            .observe(this) { isConnected ->
-                showErrorMessage(isConnected)
-            }
-    }
-
-    private fun showErrorMessage(isConnected: Boolean?) {
-        if (isConnected == true) {
-            binding.errorMessage.visibility = View.GONE
-        } else {
-            binding.errorMessage.visibility = View.VISIBLE
+        networkStateManager.networkStatusLiveData.observe(this) { isConnected ->
+            binding.errorMessage.isVisible = !isConnected
         }
     }
 }

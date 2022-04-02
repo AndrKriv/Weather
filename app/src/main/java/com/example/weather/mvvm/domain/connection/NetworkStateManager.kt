@@ -3,18 +3,19 @@ package com.example.weather.mvvm.domain.connection
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.distinctUntilChanged
+import javax.inject.Inject
 
-class NetworkStateManager {
+class NetworkStateManager @Inject constructor(){
 
-    private val networkStatusLiveData = MutableLiveData<Boolean?>()
+    private val _networkStatusLiveData = MutableLiveData<Boolean>()
+    val networkStatusLiveData: LiveData<Boolean> = _networkStatusLiveData.distinctUntilChanged()
 
     fun setNetworkConnectivityStatus(connectivityStatus: Boolean) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            networkStatusLiveData.setValue(connectivityStatus)
+            _networkStatusLiveData.setValue(connectivityStatus)
         } else {
-            networkStatusLiveData.postValue(connectivityStatus)
+            _networkStatusLiveData.postValue(connectivityStatus)
         }
     }
-
-    fun getNetworkConnectivityStatus(): LiveData<Boolean?> = networkStatusLiveData
 }
