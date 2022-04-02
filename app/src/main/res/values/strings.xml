@@ -11,7 +11,7 @@
     <string name="location">Ваша геолокация выключена. Включить?</string>
     <string name="internet">Ваша сеть выключена. Включить?</string>
     <string name="yes">Да</string>
-    <string name="no">Нет</string>
+    <string name="no">Нет, закрыть</string>
     <string name="error">Возникла ошибка загрузки данных, попробуйте перезагрузить приложение</string>
     <string name="tap">Нажмите на пункт Today в панели навигации</string>
     <string name="ne">СВ</string>
@@ -33,4 +33,8 @@
     <string name="pressure">Давление: %s мм рт. ст.</string>
     <string name="wind">Ветер: %s</string>
     <string name="wind_speed">Скорость ветра: %s м/с</string>
+    <string name="first_dialog_message">Чтобы получать погоду согласно Вашему местоположению,
+        Вам необходимо разрешить доступ к геолокации Вашего устройства!</string>
+    <string name="second_dialog_message">Если Вы всё-таки хотите увидеть погоду -
+    идите в настройки и разрешите доступ этому приложению к геолокации Вашего устройства!!!</string>
 </resources>

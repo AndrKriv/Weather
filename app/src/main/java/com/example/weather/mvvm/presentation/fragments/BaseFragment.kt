@@ -2,27 +2,48 @@ package com.example.weather.mvvm.presentation.fragments
 
 import android.Manifest
 import android.app.Activity
-import android.content.pm.PackageManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.example.weather.R
 import com.example.weather.mvvm.presentation.factory.ViewModelFactory
-import com.example.weather.utils.Constants
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import javax.inject.Inject
 
 abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
+
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    private val singlePermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            when {
+                granted -> {
+                    checkPermissions()
+                    startLocationUpdates()
+                }
+                !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                    showAlertMessageWhenDeniedSecondTime()
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                    showAlertMessageWhenDeniedFirstTime()
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,11 +68,9 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (requestPermissionsIfNeeded()) {
-            startLocationUpdates()
-        }
+    override fun onStart() {
+        super.onStart()
+        singlePermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     override fun onPause() {
@@ -61,59 +80,22 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
     abstract fun onWeatherDataReceived(latitude: String, longitude: String)
 
-    private fun requestPermissionsIfNeeded(): Boolean {
-        return if (checkPermissions()) {
-            return true
-        } else {
-            showPermissionWindowToUser(requireActivity())
-            false
-        }
-    }
+    private fun checkPermissions() {
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(LocationRequest())
+        val task = LocationServices.getSettingsClient(requireContext())
+            .checkLocationSettings(builder.build())
 
-    private fun checkPermissions(): Boolean {
-        if (
-            checkSelfPermissions(Manifest.permission.ACCESS_COARSE_LOCATION) ||
-            checkSelfPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-        ) {
-            val builder = LocationSettingsRequest.Builder()
-            builder.addLocationRequest(LocationRequest())
-            val task = LocationServices.getSettingsClient(requireContext())
-                .checkLocationSettings(builder.build())
-            task.addOnCompleteListener { result ->
-                try {
-                    result.getResult(ApiException::class.java)
-                } catch (e: ResolvableApiException) {
-                    e.startResolutionForResult(requireActivity(), Constants.REQUEST_CODE)
-                }
+        task.addOnCompleteListener { result ->
+            try {
+                result.getResult(ApiException::class.java)
+            } catch (e: ResolvableApiException) {
+                e.startResolutionForResult(
+                    requireActivity(),
+                    Activity.RESULT_CANCELED
+                )
             }
-            return true
         }
-        return false
-    }
-
-    private fun checkSelfPermissions(permission: String): Boolean =
-        ActivityCompat.checkSelfPermission(
-            requireContext(),
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
-
-    private fun showPermissionWindowToUser(activity: Activity) {
-        ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-            Constants.REQUEST_CODE
-        )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(Constants.REQUEST_CODE, permissions, grantResults)
     }
 
     private fun startLocationUpdates() {
@@ -126,5 +108,39 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
     private fun stopLocationUpdates() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+    }
+
+    private fun showAlertMessageWhenDeniedSecondTime() =
+        AlertDialog
+            .Builder(requireContext())
+            .setMessage(R.string.second_dialog_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.yes) { _, _ ->
+                startActivity(
+                    Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + requireActivity().packageName)
+                    )
+                )
+            }
+            .setNegativeButton(R.string.no) { _, _ ->
+                requireActivity().finish()
+            }
+            .create()
+            .show()
+
+    private fun showAlertMessageWhenDeniedFirstTime() {
+        AlertDialog
+            .Builder(requireContext())
+            .setMessage(R.string.first_dialog_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.yes) { _, _ ->
+                singlePermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+            .setNegativeButton(R.string.no) { _, _ ->
+                requireActivity().finish()
+            }
+            .create()
+            .show()
     }
 }
