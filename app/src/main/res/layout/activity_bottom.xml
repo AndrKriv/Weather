@@ -8,6 +8,18 @@
     android:orientation="vertical"
     tools:context=".mvvm.presentation.BottomActivity">
 
+    <TextView
+        android:id="@+id/error_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/connection"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:background="@color/red"
+        android:textSize="16sp"
+        />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment_activity_bottom"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -20,7 +32,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/mobile_navigation" />
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"

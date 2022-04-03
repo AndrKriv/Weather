@@ -16,7 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
         >
-
         <activity
             android:name=".mvvm.presentation.BottomActivity"
             android:exported="true">
