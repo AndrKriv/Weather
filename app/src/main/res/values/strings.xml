@@ -12,6 +12,7 @@
     <string name="internet">Ваша сеть выключена. Включить?</string>
     <string name="yes">Да</string>
     <string name="no">Нет, закрыть</string>
+    <string name="close">Закрыть</string>
     <string name="error">Возникла ошибка загрузки данных, попробуйте перезагрузить приложение</string>
     <string name="tap">Нажмите на пункт Today в панели навигации</string>
     <string name="ne">СВ</string>
@@ -37,4 +38,6 @@
         Вам необходимо разрешить доступ к геолокации Вашего устройства!</string>
     <string name="second_dialog_message">Если Вы всё-таки хотите увидеть погоду -
     идите в настройки и разрешите доступ этому приложению к геолокации Вашего устройства!!!</string>
+    <string name="old_location_data">Приложение использует устаревшие геоданные,
+        для получения актуальных данных откройте доступ к геолокацию</string>
 </resources>

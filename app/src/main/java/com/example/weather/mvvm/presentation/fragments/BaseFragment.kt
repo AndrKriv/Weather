@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
@@ -29,7 +30,7 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val singlePermission =
+    private val locationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             when {
                 granted -> {
@@ -70,7 +71,7 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
     override fun onStart() {
         super.onStart()
-        singlePermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     override fun onPause() {
@@ -113,9 +114,9 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     private fun showAlertMessageWhenDeniedSecondTime() =
         AlertDialog
             .Builder(requireContext())
-            .setMessage(R.string.second_dialog_message)
+            .setMessage(getString(R.string.second_dialog_message))
             .setCancelable(false)
-            .setPositiveButton(R.string.yes) { _, _ ->
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 startActivity(
                     Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -123,8 +124,12 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
                     )
                 )
             }
-            .setNegativeButton(R.string.no) { _, _ ->
-                requireActivity().finish()
+            .setNegativeButton(getString(R.string.close)) { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.old_location_data),
+                    Toast.LENGTH_LONG
+                ).show()
             }
             .create()
             .show()
@@ -132,13 +137,10 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     private fun showAlertMessageWhenDeniedFirstTime() {
         AlertDialog
             .Builder(requireContext())
-            .setMessage(R.string.first_dialog_message)
+            .setMessage(getString(R.string.first_dialog_message))
             .setCancelable(false)
             .setPositiveButton(R.string.yes) { _, _ ->
-                singlePermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-            .setNegativeButton(R.string.no) { _, _ ->
-                requireActivity().finish()
+                locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
             .create()
             .show()
