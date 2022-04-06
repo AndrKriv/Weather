@@ -1,10 +1,7 @@
 package com.example.weather.di.component
 
 import android.app.Application
-import com.example.weather.di.module.InternetMonitoringModule
-import com.example.weather.di.module.NetworkModule
-import com.example.weather.di.module.ViewModelFactoryModule
-import com.example.weather.di.module.ViewModelModule
+import com.example.weather.di.module.*
 import com.example.weather.mvvm.presentation.BottomActivity
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.fragments.ForecastFragment
@@ -19,7 +16,8 @@ import javax.inject.Singleton
     ViewModelModule::class,
     NetworkModule::class,
     ViewModelFactoryModule::class,
-    InternetMonitoringModule::class
+    InternetMonitoringModule::class,
+    DatabaseModule::class
 ]
 )
 interface AppComponent {

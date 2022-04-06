@@ -6,12 +6,12 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.weather.R
 import com.example.weather.databinding.FragmentForecastBinding
-import com.example.weather.di.component.DaggerAppComponent
+import com.example.weather.mvvm.presentation.UIModel
+import com.example.weather.utils.fromForecastDatabaseToUIModel
 import com.example.weather.mvvm.domain.viewBinding
-import com.example.weather.mvvm.presentation.adapter.ForecastAdapter
+import com.example.weather.mvvm.presentation.adapter.ForExampleAdapter
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.viewmodel.ForecastViewModel
-import com.example.weather.utils.Constants
 
 class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
@@ -21,14 +21,21 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val forecastAdapter = ForecastAdapter()
+        val forecastAdapter = ForExampleAdapter()
         binding.forecastRecyclerView.adapter = forecastAdapter
         forecastViewModel.forecastLiveData.observe(viewLifecycleOwner) {
-            forecastAdapter.setItems(it.list)
+            val list = mutableListOf<UIModel>()
+            for ((i, value) in it.withIndex()) {
+                list.add(i, value.fromForecastDatabaseToUIModel())
+            }
+            forecastAdapter.setItems(list)
         }
         forecastViewModel.errorLiveData.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), getString(R.string.connection), Toast.LENGTH_SHORT)
                 .show()
+        }
+        forecastViewModel.databaseLiveData.observe(viewLifecycleOwner) {
+            forecastAdapter.setItems(it)
         }
     }
 
