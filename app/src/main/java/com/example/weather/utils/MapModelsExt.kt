@@ -6,16 +6,16 @@ import com.example.weather.room.model.ForecastDatabaseModel
 
 fun ForecastInfo.fromForecastInfoToForecastDatabaseModel(id: Int): ForecastDatabaseModel =
     ForecastDatabaseModel(
-        date = time,
-        description = weather.single().description,
+        date = time.toDate(),
+        description = weather[0].description,
         degrees = temp.degrees.toDouble(),
         id = id
     )
 
 fun ForecastInfo.fromForecastDatabaseToUIModel(): UIModel =
     UIModel(
-        date = time,
-        description = weather.single().description,
+        date = time.toDate(),
+        description = weather[0].description,
         degrees = temp.degrees.toDouble()
     )
 

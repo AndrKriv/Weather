@@ -3,13 +3,11 @@ package com.example.weather.mvvm.presentation.fragments
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
@@ -17,7 +15,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.weather.R
 import com.example.weather.mvvm.presentation.factory.ViewModelFactory
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import javax.inject.Inject
@@ -35,7 +32,6 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
             when {
                 granted -> {
                     checkPermissions()
-                    startLocationUpdates()
                 }
                 !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showAlertMessageWhenDeniedSecondTime()
@@ -46,17 +42,8 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
             }
         }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(layoutId, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
         locationCallback = object : LocationCallback() {
@@ -74,27 +61,35 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
         locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         stopLocationUpdates()
     }
 
     abstract fun onWeatherDataReceived(latitude: String, longitude: String)
 
     private fun checkPermissions() {
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(LocationRequest())
-        val task = LocationServices.getSettingsClient(requireContext())
-            .checkLocationSettings(builder.build())
-
-        task.addOnCompleteListener { result ->
-            try {
-                result.getResult(ApiException::class.java)
-            } catch (e: ResolvableApiException) {
-                e.startResolutionForResult(
-                    requireActivity(),
-                    Activity.RESULT_CANCELED
+        val task =
+            LocationServices
+                .getSettingsClient(requireContext())
+                .checkLocationSettings(
+                    LocationSettingsRequest
+                        .Builder()
+                        .addLocationRequest(LocationRequest())
+                        .build()
                 )
+        task.addOnCompleteListener {
+            startLocationUpdates()
+        }
+        task.addOnFailureListener { exception ->
+            if (exception is ResolvableApiException) {
+                try {
+                    exception.startResolutionForResult(
+                        requireActivity(),
+                        Activity.RESULT_CANCELED
+                    )
+                } catch (sendEx: IntentSender.SendIntentException) {
+                }
             }
         }
     }
