@@ -3,9 +3,10 @@ package com.example.weather.room.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.weather.utils.Constants
 
-@Entity(tableName = "forecast_table")
-data class ForecastDatabaseModel(
+@Entity(tableName = Constants.TABLE_NAME)
+data class ForecastEntity(
 
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")

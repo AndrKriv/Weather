@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.example.weather.room.dao.WeatherDao
 import com.example.weather.room.database.ForecastDatabase
+import com.example.weather.utils.Constants
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -14,8 +15,7 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun provideDao(database: ForecastDatabase): WeatherDao =
-        database
-            .weatherDao()
+        database.weatherDao()
 
     @Singleton
     @Provides
@@ -24,7 +24,7 @@ class DatabaseModule {
             .databaseBuilder(
                 application.applicationContext,
                 ForecastDatabase::class.java,
-                "forecast_database"
+                Constants.DATABASE_NAME
             )
             .build()
 }

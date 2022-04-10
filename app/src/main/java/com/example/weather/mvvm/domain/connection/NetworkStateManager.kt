@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
 import javax.inject.Inject
 
-class NetworkStateManager @Inject constructor(){
+class NetworkStateManager @Inject constructor() {
 
     private val _networkStatusLiveData = MutableLiveData<Boolean>()
     val networkStatusLiveData: LiveData<Boolean> = _networkStatusLiveData.distinctUntilChanged()

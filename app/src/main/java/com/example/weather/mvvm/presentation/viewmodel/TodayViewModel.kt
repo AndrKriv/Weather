@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class TodayViewModel @Inject constructor(
     private val interactor: WeatherInteractor
-    ) : BaseViewModel() {
+) : BaseViewModel() {
 
     private val _todayLiveData = MutableLiveData<TodayInfo>()
     val todayLiveData: LiveData<TodayInfo> = _todayLiveData
