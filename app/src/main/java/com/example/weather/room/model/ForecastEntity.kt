@@ -8,9 +8,9 @@ import com.example.weather.utils.Constants
 @Entity(tableName = Constants.TABLE_NAME)
 data class ForecastEntity(
 
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id: Int,
+    val id: Int = 0,
     @ColumnInfo(name = "date")
     val date: String,
     @ColumnInfo(name = "description")

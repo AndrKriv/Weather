@@ -30,7 +30,7 @@
     <string name="city">Город: %s</string>
     <string name="date">Дата: %s</string>
     <string name="temp">Температура: %s °C</string>
-    <string name="humidity">Влажность: %s процентов</string>
+    <string name="humidity">Влажность: %s %% </string>
     <string name="pressure">Давление: %s мм рт. ст.</string>
     <string name="wind">Ветер: %s</string>
     <string name="wind_speed">Скорость ветра: %s м/с</string>

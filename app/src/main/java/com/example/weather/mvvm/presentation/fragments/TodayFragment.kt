@@ -6,7 +6,6 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import com.example.weather.R
 import com.example.weather.databinding.FragmentTodayBinding
-import com.example.weather.mvvm.domain.connection.NetworkStateManager
 import com.example.weather.mvvm.domain.viewBinding
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
@@ -14,15 +13,11 @@ import com.example.weather.utils.convertPressure
 import com.example.weather.utils.loadImg
 import com.example.weather.utils.toWindDirection
 import com.example.weather.utils.today
-import javax.inject.Inject
 
 class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
     private val binding: FragmentTodayBinding by viewBinding(FragmentTodayBinding::bind)
     private val todayViewModel: TodayViewModel by viewModels { viewModelFactory }
-
-    @Inject
-    lateinit var networkStateManager: NetworkStateManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,12 +67,7 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
             .inject(this)
     }
 
-    override fun onWeatherDataReceived(latitude: String, longitude: String) {
-        networkStateManager.networkStatusLiveData.observe(viewLifecycleOwner) {
-            if (it)
-                todayViewModel.getTodayData(latitude, longitude)
-            else
-                Log.e("AAA", "No connection")
-        }
-    }
+    override fun onWeatherDataReceived(latitude: String, longitude: String) =
+        todayViewModel.getTodayData(latitude, longitude)
+
 }

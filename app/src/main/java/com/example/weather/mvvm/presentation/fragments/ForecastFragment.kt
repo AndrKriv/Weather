@@ -42,9 +42,7 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
             .inject(this)
     }
 
-    override fun onWeatherDataReceived(latitude: String, longitude: String) {
-        networkStateManager.networkStatusLiveData.observe(viewLifecycleOwner) {
-            forecastViewModel.getForecastData(latitude, longitude, it)
-        }
-    }
+    override fun onWeatherDataReceived(latitude: String, longitude: String) =
+        forecastViewModel.getForecastData(latitude, longitude)
+
 }

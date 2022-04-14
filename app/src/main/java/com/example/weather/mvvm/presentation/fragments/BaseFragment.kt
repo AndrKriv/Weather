@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.net.Uri
-import android.os.Bundle
-import android.os.Looper
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +12,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.weather.R
+import com.example.weather.mvvm.domain.location.LocationManager
 import com.example.weather.mvvm.presentation.factory.ViewModelFactory
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -21,17 +20,24 @@ import javax.inject.Inject
 
 abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            super.onLocationResult(locationResult)
+            for (loc in locationResult.locations) {
+                onWeatherDataReceived(loc.latitude.toString(), loc.longitude.toString())
+            }
+        }
+    }
+    private val locationManager by lazy { LocationManager(requireContext(), locationCallback) }
 
     private val locationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             when {
                 granted -> {
-                    checkPermissions()
+                    requestGps()
                 }
                 !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showAlertMessageWhenDeniedSecondTime()
@@ -42,20 +48,6 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                super.onLocationResult(locationResult)
-                for (loc in locationResult.locations) {
-                    onWeatherDataReceived(loc.latitude.toString(), loc.longitude.toString())
-                }
-            }
-        }
-    }
-
     override fun onStart() {
         super.onStart()
         locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -63,23 +55,23 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
     override fun onStop() {
         super.onStop()
-        stopLocationUpdates()
+        locationManager.removeUpdates()
     }
 
     abstract fun onWeatherDataReceived(latitude: String, longitude: String)
 
-    private fun checkPermissions() {
+    private fun requestGps() {
         val task =
             LocationServices
                 .getSettingsClient(requireContext())
                 .checkLocationSettings(
                     LocationSettingsRequest
                         .Builder()
-                        .addLocationRequest(LocationRequest())
+                        .addLocationRequest(LocationRequest.create())
                         .build()
                 )
         task.addOnCompleteListener {
-            startLocationUpdates()
+            locationManager.requestUpdates()
         }
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException) {
@@ -92,18 +84,6 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
                 }
             }
         }
-    }
-
-    private fun startLocationUpdates() {
-        fusedLocationProviderClient.requestLocationUpdates(
-            LocationRequest(),
-            locationCallback,
-            Looper.getMainLooper()
-        )
-    }
-
-    private fun stopLocationUpdates() {
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
     private fun showAlertMessageWhenDeniedSecondTime() =

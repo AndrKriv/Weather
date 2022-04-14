@@ -10,7 +10,7 @@ import javax.inject.Inject
 class NetworkMonitoringUtil @Inject constructor(
     private val connectivityManager: ConnectivityManager,
     private val networkStateManager: NetworkStateManager,
-    private val networkRequest: NetworkRequest
+    networkRequest: NetworkRequest
 ) : NetworkCallback() {
 
     init {
