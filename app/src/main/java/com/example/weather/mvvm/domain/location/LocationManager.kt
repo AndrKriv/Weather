@@ -3,14 +3,12 @@ package com.example.weather.mvvm.domain.location
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Looper
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 
-class LocationManager(val context: Context, private val locationCallback: LocationCallback) {
+class LocationManager(val context: Context) {
 
     private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(context)
@@ -18,8 +16,11 @@ class LocationManager(val context: Context, private val locationCallback: Locati
 
     private val locationRequest: LocationRequest = LocationRequest.create()
 
-    @Suppress("IMPLICIT_CAST_TO_ANY")
-    fun requestUpdates() =
+    private lateinit var locationUpdatesCompleteAction: ((Location) -> Unit)
+
+    fun setOnLocationChangedListener(listener: (Location) -> Unit) {
+        this.locationUpdatesCompleteAction = listener
+
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -32,9 +33,14 @@ class LocationManager(val context: Context, private val locationCallback: Locati
                 locationRequest,
                 locationCallback,
                 Looper.getMainLooper()
-            ) else {
-        }
+            )
+    }
 
-    fun removeUpdates() =
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+    private val locationCallback: LocationCallback =
+        object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationUpdatesCompleteAction.invoke(locationResult.lastLocation)
+                fusedLocationProviderClient.removeLocationUpdates(this)
+            }
+        }
 }

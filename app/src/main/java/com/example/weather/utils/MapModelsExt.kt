@@ -1,13 +1,12 @@
 package com.example.weather.utils
 
-import androidx.lifecycle.LiveData
 import com.example.weather.mvvm.core.ForecastInfo
+import com.example.weather.mvvm.core.TodayInfo
 import com.example.weather.mvvm.domain.connection.NetworkStateManager
 import com.example.weather.mvvm.presentation.ForecastUIModel
 import com.example.weather.room.model.ForecastEntity
+import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 fun ForecastInfo.toUIModel(): ForecastUIModel =
     ForecastUIModel(
@@ -62,4 +61,10 @@ fun List<ForecastInfo>.fromInfoToEntityList(): List<ForecastEntity> {
         list.add(value.toEntityModel())
     }
     return list
+}
+
+fun Maybe<TodayInfo>.maybeToSingle(networkStateManager: NetworkStateManager)
+        : Single<TodayInfo> {
+
+    return this.toSingle()
 }

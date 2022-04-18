@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.weather.mvvm.core.TodayInfo
 import com.example.weather.mvvm.domain.interactor.WeatherInteractor
+import com.example.weather.utils.SingleLiveEvent
 import javax.inject.Inject
 
 class TodayViewModel @Inject constructor(
@@ -13,8 +14,7 @@ class TodayViewModel @Inject constructor(
 
     private val _todayLiveData = MutableLiveData<TodayInfo>()
     val todayLiveData: LiveData<TodayInfo> = _todayLiveData
-    private val _errorLiveData = MutableLiveData<String>()
-    val errorLiveData: LiveData<String> = _errorLiveData
+    val errorLiveData = SingleLiveEvent<String>()
 
     fun getTodayData(lat: String, lon: String) {
         interactor
@@ -22,7 +22,7 @@ class TodayViewModel @Inject constructor(
             .subscribe({ currentWeather ->
                 _todayLiveData.value = currentWeather
             }, {
-                _errorLiveData.value = it.message
+                errorLiveData.value = it.message
             })
             .addToDisposable()
     }

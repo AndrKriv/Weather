@@ -15,7 +15,9 @@ import com.example.weather.R
 import com.example.weather.mvvm.domain.location.LocationManager
 import com.example.weather.mvvm.presentation.factory.ViewModelFactory
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import javax.inject.Inject
 
 abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
@@ -23,15 +25,7 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            super.onLocationResult(locationResult)
-            for (loc in locationResult.locations) {
-                onWeatherDataReceived(loc.latitude.toString(), loc.longitude.toString())
-            }
-        }
-    }
-    private val locationManager by lazy { LocationManager(requireContext(), locationCallback) }
+    private val locationManager by lazy { LocationManager(requireContext()) }
 
     private val locationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -53,11 +47,6 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
         locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    override fun onStop() {
-        super.onStop()
-        locationManager.removeUpdates()
-    }
-
     abstract fun onWeatherDataReceived(latitude: String, longitude: String)
 
     private fun requestGps() {
@@ -71,7 +60,9 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
                         .build()
                 )
         task.addOnCompleteListener {
-            locationManager.requestUpdates()
+            locationManager.setOnLocationChangedListener {
+                onWeatherDataReceived(it.latitude.toString(), it.longitude.toString())
+            }
         }
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException) {

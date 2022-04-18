@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.weather.mvvm.domain.interactor.WeatherInteractor
 import com.example.weather.mvvm.presentation.ForecastUIModel
+import com.example.weather.utils.SingleLiveEvent
 import javax.inject.Inject
 
 class ForecastViewModel @Inject constructor(
@@ -12,8 +13,7 @@ class ForecastViewModel @Inject constructor(
 
     private val _forecastLiveData = MutableLiveData<List<ForecastUIModel>>()
     val forecastLiveData: LiveData<List<ForecastUIModel>> = _forecastLiveData
-    private val _errorLiveData = MutableLiveData<String>()
-    val errorLiveData: LiveData<String> = _errorLiveData
+    val errorLiveData = SingleLiveEvent<String>()
 
     fun getForecastData(lat: String, lon: String) {
         weatherInteractor
@@ -22,7 +22,7 @@ class ForecastViewModel @Inject constructor(
                 { forecastWeather ->
                     _forecastLiveData.value = forecastWeather
                 }, {
-                    _errorLiveData.value = it.message
+                    errorLiveData.value = it.message
                 })
             .addToDisposable()
     }

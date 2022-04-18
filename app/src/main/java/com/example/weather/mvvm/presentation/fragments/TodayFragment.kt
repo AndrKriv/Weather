@@ -3,6 +3,7 @@ package com.example.weather.mvvm.presentation.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.weather.R
 import com.example.weather.databinding.FragmentTodayBinding
@@ -37,7 +38,7 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
             }
         }
         todayViewModel.errorLiveData.observe(viewLifecycleOwner) {
-            binding.tvCity.text = getString(R.string.connection)
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
         binding.share.setOnClickListener {
             todayViewModel.todayLiveData.value?.let {
@@ -69,5 +70,4 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
     override fun onWeatherDataReceived(latitude: String, longitude: String) =
         todayViewModel.getTodayData(latitude, longitude)
-
 }

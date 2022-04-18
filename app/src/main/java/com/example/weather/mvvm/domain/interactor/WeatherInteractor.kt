@@ -1,6 +1,5 @@
 package com.example.weather.mvvm.domain.interactor
 
-import android.util.Log
 import com.example.weather.mvvm.core.TodayInfo
 import com.example.weather.mvvm.data.ApiService
 import com.example.weather.mvvm.presentation.ForecastUIModel
@@ -17,13 +16,13 @@ class WeatherInteractor @Inject constructor(
     private val apiService: ApiService,
     private val weatherDao: WeatherDao
 ) {
-
     fun getCurrentWeather(
         lat: String,
         lon: String
     ): Single<TodayInfo> =
         apiService
             .getTodayData(lat, lon)
+            .retry()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
@@ -34,12 +33,11 @@ class WeatherInteractor @Inject constructor(
                 it.list.map { forecastInfo ->
                     forecastInfo.toEntityModel()
                 }
-                    .let { forecastList ->
-                        Log.e("AAA", weatherDao.getTableSize().toString())
+                    .let { forecastEntityList ->
                         if (weatherDao.getTableSize() > 0) {
                             weatherDao.removeData(weatherDao.getForecastData().blockingGet())
                         }
-                        weatherDao.insertData(forecastList)
+                        weatherDao.insertData(forecastEntityList)
                     }
                 it
             }
@@ -47,9 +45,15 @@ class WeatherInteractor @Inject constructor(
                 Single.just(it.list.fromInfoToUIModelList())
             }
             .onErrorResumeNext {
-                weatherDao.getForecastData().map {
-                    it.fromEntityToUIModelList()
-                }
+                weatherDao
+                    .getForecastData()
+                    .filter {
+                        weatherDao.getTableSize() > 0
+                    }
+                    .map {
+                        it.fromEntityToUIModelList()
+                    }
+                    .toSingle()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -8,6 +8,7 @@
     <string name="denied">Доступ запрещён</string>
     <string name="lat">Today</string>
     <string name="connection">Проверьте Ваше интернет-соединение!</string>
+    <string name="no_data">Никакие данные ещё не были получены!</string>
     <string name="location">Ваша геолокация выключена. Включить?</string>
     <string name="internet">Ваша сеть выключена. Включить?</string>
     <string name="yes">Да</string>
