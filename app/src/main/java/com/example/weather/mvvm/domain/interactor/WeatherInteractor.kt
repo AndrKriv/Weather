@@ -1,28 +1,47 @@
 package com.example.weather.mvvm.domain.interactor
 
-import com.example.weather.mvvm.core.TodayInfo
 import com.example.weather.mvvm.data.ApiService
+import com.example.weather.mvvm.domain.connection.NetworkStateManager
 import com.example.weather.mvvm.presentation.ForecastUIModel
-import com.example.weather.room.dao.WeatherDao
-import com.example.weather.utils.fromEntityToUIModelList
-import com.example.weather.utils.fromInfoToUIModelList
-import com.example.weather.utils.toEntityModel
+import com.example.weather.mvvm.presentation.TodayUIModel
+import com.example.weather.room.dao.ForecastDao
+import com.example.weather.room.dao.TodayDao
+import com.example.weather.utils.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 class WeatherInteractor @Inject constructor(
     private val apiService: ApiService,
-    private val weatherDao: WeatherDao
+    private val todayDao: TodayDao,
+    private val forecastDao: ForecastDao,
+    val networkStateManager: NetworkStateManager
 ) {
+    fun observeNetworkState(): BehaviorSubject<Boolean> =
+        networkStateManager.connectionObserver
+
     fun getCurrentWeather(
         lat: String,
         lon: String
-    ): Single<TodayInfo> =
+    ): Single<TodayUIModel> =
         apiService
             .getTodayData(lat, lon)
-            .retry()
+            .map {
+                it.toEntity().let { todayEntity ->
+                    todayDao.removeTodayData()
+                    todayDao.insertTodayData(todayEntity)
+                }
+                it.toUIModel()
+            }
+            .onErrorResumeNext {
+                todayDao
+                    .getTodayData()
+                    .map {
+                        it.toUIModel()
+                    }
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
@@ -34,26 +53,17 @@ class WeatherInteractor @Inject constructor(
                     forecastInfo.toEntityModel()
                 }
                     .let { forecastEntityList ->
-                        if (weatherDao.getTableSize() > 0) {
-                            weatherDao.removeData(weatherDao.getForecastData().blockingGet())
-                        }
-                        weatherDao.insertData(forecastEntityList)
+                        forecastDao.removeForecastData()
+                        forecastDao.insertForecastData(forecastEntityList)
                     }
-                it
-            }
-            .flatMap {
-                Single.just(it.list.fromInfoToUIModelList())
+                it.list.fromInfoToUIModelList()
             }
             .onErrorResumeNext {
-                weatherDao
+                forecastDao
                     .getForecastData()
-                    .filter {
-                        weatherDao.getTableSize() > 0
-                    }
                     .map {
                         it.fromEntityToUIModelList()
                     }
-                    .toSingle()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

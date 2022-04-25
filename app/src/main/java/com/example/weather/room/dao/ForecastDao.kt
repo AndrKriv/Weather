@@ -5,17 +5,14 @@ import com.example.weather.room.model.ForecastEntity
 import io.reactivex.Single
 
 @Dao
-interface WeatherDao {
+interface ForecastDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertData(forecastEntity: List<ForecastEntity>)
+    fun insertForecastData(forecastEntity: List<ForecastEntity>)
 
     @Query("SELECT * FROM forecast_table")
     fun getForecastData(): Single<List<ForecastEntity>>
 
-    @Query("SELECT count(id) FROM forecast_table")
-    fun getTableSize(): Int
-
-    @Delete
-    fun removeData(forecastEntity: List<ForecastEntity>)
+    @Query("DELETE FROM forecast_table")
+    fun removeForecastData()
 }

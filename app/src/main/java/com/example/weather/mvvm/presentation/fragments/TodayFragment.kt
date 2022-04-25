@@ -10,10 +10,7 @@ import com.example.weather.databinding.FragmentTodayBinding
 import com.example.weather.mvvm.domain.viewBinding
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
-import com.example.weather.utils.convertPressure
-import com.example.weather.utils.loadImg
-import com.example.weather.utils.toWindDirection
-import com.example.weather.utils.today
+import com.example.weather.utils.*
 
 class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
@@ -26,15 +23,15 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
             with(binding) {
                 tvCity.text = getString(R.string.city, it.city)
                 tvDate.text = getString(R.string.date, it.date.today())
-                tvTemp.text = getString(R.string.temp, it.main.temp)
-                tvDescription.text = it.weather[0].description
-                tvHumidity.text = getString(R.string.humidity, it.main.humidity)
+                tvTemp.text = getString(R.string.temp, it.degrees)
+                tvDescription.text = it.description
+                tvHumidity.text = getString(R.string.humidity, it.humidity)
                 tvPressure.text =
-                    getString(R.string.pressure, it.main.pressure.convertPressure())
-                val windDirection = it.wind.deg.toWindDirection(requireContext())
+                    getString(R.string.pressure, it.pressure)
+                val windDirection = it.wind.toWindDirection(requireContext())
                 tvWind.text = getString(R.string.wind, windDirection)
-                tvWindSpeed.text = getString(R.string.wind_speed, it.wind.speed)
-                ivImg.setImageResource(loadImg(it.weather[0].description))
+                tvWindSpeed.text = getString(R.string.wind_speed, it.windSpeed)
+                ivImg.setImageResource(loadImg(it.description))
             }
         }
         todayViewModel.errorLiveData.observe(viewLifecycleOwner) {
@@ -47,17 +44,23 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
                         todayViewModel.sendInfoChooser(
                             todayViewModel.stringToShare(
                                 city,
-                                main.temp.toDouble(),
-                                weather.get(0).description,
-                                wind.speed.toDouble(),
-                                main.humidity.toDouble(),
-                                main.pressure.convertPressure()
-                                    .toDouble()
+                                degrees,
+                                description,
+                                windSpeed,
+                                humidity,
+                                pressure
                             ) + "\n" + getString(R.string.sharing)
                         )
                     }
                 )
             } ?: Log.e("AAA", "LiveData is Empty")
+        }
+
+        todayViewModel.loaderLiveData.observe(viewLifecycleOwner) {
+            if (it)
+                showProgressBar()
+            else
+                hideProgressBar()
         }
     }
 
@@ -68,6 +71,13 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
             .inject(this)
     }
 
-    override fun onWeatherDataReceived(latitude: String, longitude: String) =
-        todayViewModel.getTodayData(latitude, longitude)
+    override fun onLocationReceived(latitude: String, longitude: String) {
+        todayViewModel.reloadLiveData.observeForever{
+            todayViewModel.getTodayData(latitude, longitude)
+        }
+    }
+
+    override fun showProgressBar() = binding.todayProgressBar.isVisible()
+
+    override fun hideProgressBar() = binding.todayProgressBar.isGone()
 }

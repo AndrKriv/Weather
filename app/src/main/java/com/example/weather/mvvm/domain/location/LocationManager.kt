@@ -14,33 +14,36 @@ class LocationManager(val context: Context) {
         LocationServices.getFusedLocationProviderClient(context)
     }
 
+    private val locationCallback: LocationCallback =
+        object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationUpdatesCompleteAction.invoke(locationResult.lastLocation)
+            }
+        }
+
     private val locationRequest: LocationRequest = LocationRequest.create()
 
     private lateinit var locationUpdatesCompleteAction: ((Location) -> Unit)
 
-    fun setOnLocationChangedListener(listener: (Location) -> Unit) {
-        this.locationUpdatesCompleteAction = listener
-
+    fun requestLocationUpdates(locationListener: (Location) -> Unit) {
+        this.locationUpdatesCompleteAction = locationListener
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
-        )
+        ) {
+            locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
                 Looper.getMainLooper()
             )
+        }
+
     }
 
-    private val locationCallback: LocationCallback =
-        object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationUpdatesCompleteAction.invoke(locationResult.lastLocation)
-                fusedLocationProviderClient.removeLocationUpdates(this)
-            }
-        }
+    fun removeLocation() = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
 }

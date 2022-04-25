@@ -5,6 +5,7 @@ object Constants {
     const val UNITS = "metric"
     const val LANG = "ru"
     const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
-    const val TABLE_NAME = "forecast_table"
-    const val DATABASE_NAME = "forecast_database"
+    const val TODAY_TABLE_NAME = "today_table"
+    const val FORECAST_TABLE_NAME = "forecast_table"
+    const val DATABASE_NAME = "weather_database"
 }

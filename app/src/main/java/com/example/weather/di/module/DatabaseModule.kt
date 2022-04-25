@@ -2,8 +2,9 @@ package com.example.weather.di.module
 
 import android.app.Application
 import androidx.room.Room
-import com.example.weather.room.dao.WeatherDao
-import com.example.weather.room.database.ForecastDatabase
+import com.example.weather.room.dao.ForecastDao
+import com.example.weather.room.dao.TodayDao
+import com.example.weather.room.database.WeatherDatabase
 import com.example.weather.utils.Constants
 import dagger.Module
 import dagger.Provides
@@ -14,15 +15,19 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDao(database: ForecastDatabase): WeatherDao = database.weatherDao()
+    fun provideTodayDao(database: WeatherDatabase): TodayDao = database.todayDao()
+
+    @Provides
+    @Singleton
+    fun provideForecastDao(database: WeatherDatabase): ForecastDao = database.forecastDao()
 
     @Singleton
     @Provides
-    fun providesDatabase(application: Application): ForecastDatabase =
+    fun providesDatabase(application: Application): WeatherDatabase =
         Room
             .databaseBuilder(
                 application.applicationContext,
-                ForecastDatabase::class.java,
+                WeatherDatabase::class.java,
                 Constants.DATABASE_NAME
             )
             .build()

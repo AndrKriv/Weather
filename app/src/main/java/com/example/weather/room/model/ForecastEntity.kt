@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.weather.utils.Constants
 
-@Entity(tableName = Constants.TABLE_NAME)
+@Entity(tableName = Constants.FORECAST_TABLE_NAME)
 data class ForecastEntity(
 
     @PrimaryKey(autoGenerate = true)

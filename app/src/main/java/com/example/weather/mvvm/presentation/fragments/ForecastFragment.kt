@@ -10,6 +10,8 @@ import com.example.weather.mvvm.domain.viewBinding
 import com.example.weather.mvvm.presentation.adapter.ForecastAdapter
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.viewmodel.ForecastViewModel
+import com.example.weather.utils.isGone
+import com.example.weather.utils.isVisible
 
 class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
@@ -28,6 +30,16 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
             Toast.makeText(requireContext(), getString(R.string.no_data), Toast.LENGTH_SHORT)
                 .show()
         }
+
+        forecastViewModel.loaderLiveData.observe(viewLifecycleOwner) {
+            if (it)
+                showProgressBar()
+            else
+                hideProgressBar()
+        }
+        forecastViewModel.reloadLiveData.observe(viewLifecycleOwner) {
+            it
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +49,10 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
             .inject(this)
     }
 
-    override fun onWeatherDataReceived(latitude: String, longitude: String) =
+    override fun onLocationReceived(latitude: String, longitude: String) =
         forecastViewModel.getForecastData(latitude, longitude)
+
+    override fun showProgressBar() = binding.forecastProgressBar.isVisible()
+
+    override fun hideProgressBar() = binding.forecastProgressBar.isGone()
 }

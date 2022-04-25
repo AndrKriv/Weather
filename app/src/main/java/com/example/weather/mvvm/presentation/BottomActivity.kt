@@ -36,7 +36,7 @@ class BottomActivity : AppCompatActivity() {
             .inject(this)
 
         disposable = networkStateManager
-            .behaviorSubject
+            .connectionObserver
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 binding.errorMessage.isVisible = !it

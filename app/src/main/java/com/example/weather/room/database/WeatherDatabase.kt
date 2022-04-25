@@ -2,15 +2,18 @@ package com.example.weather.room.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.weather.room.dao.WeatherDao
+import com.example.weather.room.dao.ForecastDao
+import com.example.weather.room.dao.TodayDao
 import com.example.weather.room.model.ForecastEntity
+import com.example.weather.room.model.TodayEntity
 
 @Database(
-    entities = [ForecastEntity::class],
+    entities = [TodayEntity::class, ForecastEntity::class],
     version = 1,
     exportSchema = false
 )
-abstract class ForecastDatabase : RoomDatabase() {
+abstract class WeatherDatabase : RoomDatabase() {
 
-    abstract fun weatherDao(): WeatherDao
+    abstract fun todayDao(): TodayDao
+    abstract fun forecastDao(): ForecastDao
 }

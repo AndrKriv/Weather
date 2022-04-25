@@ -5,9 +5,9 @@ import javax.inject.Inject
 
 class NetworkStateManager @Inject constructor() {
 
-    val behaviorSubject = BehaviorSubject.create<Boolean>()
+    val connectionObserver = BehaviorSubject.create<Boolean>()
 
     fun setNetworkConnectivityStatus(connectivityStatus: Boolean) {
-        behaviorSubject.onNext(connectivityStatus)
+        connectionObserver.onNext(connectivityStatus)
     }
 }

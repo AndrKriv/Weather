@@ -1,11 +1,11 @@
 package com.example.weather.mvvm.presentation.fragments
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
@@ -18,6 +18,7 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
 import javax.inject.Inject
 
 abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
@@ -27,17 +28,24 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
     private val locationManager by lazy { LocationManager(requireContext()) }
 
+    private val locationRequest = LocationRequest.create()
+
+    private val locationSettingsRequest = LocationSettingsRequest
+        .Builder()
+        .addLocationRequest(locationRequest)
+        .build()
+
     private val locationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             when {
                 granted -> {
                     requestGps()
                 }
-                !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    showAlertMessageWhenDeniedSecondTime()
-                }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showAlertMessageWhenDeniedFirstTime()
+                }
+                !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                    showAlertMessageWhenDeniedSecondTime()
                 }
             }
         }
@@ -47,32 +55,44 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
         locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    abstract fun onWeatherDataReceived(latitude: String, longitude: String)
+    override fun onStop() {
+        super.onStop()
+        locationManager.removeLocation()
+    }
+
+    abstract fun onLocationReceived(latitude: String, longitude: String): Unit?
+
+    abstract fun showProgressBar()
+    abstract fun hideProgressBar()
+
+    private fun setLocationListener() =
+        locationManager.requestLocationUpdates {
+            onLocationReceived(it.latitude.toString(), it.longitude.toString())
+        }
 
     private fun requestGps() {
-        val task =
-            LocationServices
-                .getSettingsClient(requireContext())
-                .checkLocationSettings(
-                    LocationSettingsRequest
-                        .Builder()
-                        .addLocationRequest(LocationRequest.create())
-                        .build()
-                )
-        task.addOnCompleteListener {
-            locationManager.setOnLocationChangedListener {
-                onWeatherDataReceived(it.latitude.toString(), it.longitude.toString())
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        LocationServices
+            .getSettingsClient(requireContext())
+            .checkLocationSettings(
+                locationSettingsRequest
+            )
+            .addOnCompleteListener {
+                setLocationListener()
             }
-        }
-        task.addOnFailureListener { exception ->
-            if (exception is ResolvableApiException) {
-                try {
-                    exception.startResolutionForResult(
-                        requireActivity(),
-                        Activity.RESULT_CANCELED
-                    )
-                } catch (sendEx: IntentSender.SendIntentException) {
-                }
+            .addOnFailureListener { exception ->
+                gpsIsDisabled(exception)
+            }
+    }
+
+    private fun gpsIsDisabled(exception: Exception) {
+        if (exception is ResolvableApiException) {
+            try {
+                exception.startResolutionForResult(
+                    requireActivity(),
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED
+                )
+            } catch (sendEx: IntentSender.SendIntentException) {
             }
         }
     }

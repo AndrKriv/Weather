@@ -30,11 +30,11 @@
     <string name="sharing">Было отправлено с помощью приложения Weather</string>
     <string name="city">Город: %s</string>
     <string name="date">Дата: %s</string>
-    <string name="temp">Температура: %s °C</string>
-    <string name="humidity">Влажность: %s %% </string>
-    <string name="pressure">Давление: %s мм рт. ст.</string>
+    <string name="temp">Температура: %.1f °C</string>
+    <string name="humidity">Влажность: %.1f %% </string>
+    <string name="pressure">Давление: %d мм рт. ст.</string>
     <string name="wind">Ветер: %s</string>
-    <string name="wind_speed">Скорость ветра: %s м/с</string>
+    <string name="wind_speed">Скорость ветра: %.1f м/с</string>
     <string name="first_dialog_message">Чтобы получать погоду согласно Вашему местоположению,
         Вам необходимо разрешить доступ к геолокации Вашего устройства!</string>
     <string name="second_dialog_message">Если Вы всё-таки хотите увидеть погоду -
