@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.example.weather.R
 import com.example.weather.databinding.FragmentTodayBinding
@@ -35,7 +36,7 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
             }
         }
         todayViewModel.errorLiveData.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show()
         }
         binding.share.setOnClickListener {
             todayViewModel.todayLiveData.value?.let {
@@ -55,12 +56,11 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
                 )
             } ?: Log.e("AAA", "LiveData is Empty")
         }
-
         todayViewModel.loaderLiveData.observe(viewLifecycleOwner) {
-            if (it)
-                showProgressBar()
-            else
-                hideProgressBar()
+            binding.todayProgressBar.isVisible = it
+        }
+        todayViewModel.reloadLiveData.observe(viewLifecycleOwner) {
+            retrieveData()
         }
     }
 
@@ -71,13 +71,6 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
             .inject(this)
     }
 
-    override fun onLocationReceived(latitude: String, longitude: String) {
-        todayViewModel.reloadLiveData.observeForever{
-            todayViewModel.getTodayData(latitude, longitude)
-        }
-    }
-
-    override fun showProgressBar() = binding.todayProgressBar.isVisible()
-
-    override fun hideProgressBar() = binding.todayProgressBar.isGone()
+    override fun onLocationReceived(latitude: String, longitude: String) =
+        todayViewModel.getTodayData(latitude, longitude)
 }

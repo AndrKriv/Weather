@@ -22,31 +22,21 @@ class ForecastViewModel @Inject constructor(
         weatherInteractor
             .observeNetworkState()
             .skip(1)
-            .filter {
-                it
-            }
+            .filter { it }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                reloadLiveData.call()
-            }, {})
+            .subscribe({ reloadLiveData.call() }, {})
             .addToDisposable()
     }
 
     fun getForecastData(lat: String, lon: String) {
         weatherInteractor
             .getForecastData(lat, lon)
-            .doOnSubscribe {
-                loaderLiveData.value = true
-            }
-            .doAfterTerminate {
-                loaderLiveData.value = false
-            }
+            .doOnSubscribe { loaderLiveData.value = true }
+            .doAfterTerminate { loaderLiveData.value = false }
             .subscribe(
                 { forecastWeather ->
                     _forecastLiveData.value = forecastWeather
-                }, {
-                    errorLiveData.value = it.message
-                })
+                }, { errorLiveData.value = it.message })
             .addToDisposable()
     }
 }

@@ -28,18 +28,18 @@ class WeatherInteractor @Inject constructor(
     ): Single<TodayUIModel> =
         apiService
             .getTodayData(lat, lon)
-            .map {
-                it.toEntity().let { todayEntity ->
+            .map { todayInfo ->
+                todayInfo.toEntity().let { todayEntity ->
                     todayDao.removeTodayData()
                     todayDao.insertTodayData(todayEntity)
                 }
-                it.toUIModel()
+                todayInfo.toUIModel()
             }
             .onErrorResumeNext {
                 todayDao
                     .getTodayData()
-                    .map {
-                        it.toUIModel()
+                    .map { todayEntity ->
+                        todayEntity.toUIModel()
                     }
             }
             .subscribeOn(Schedulers.io())
@@ -48,21 +48,21 @@ class WeatherInteractor @Inject constructor(
     fun getForecastData(lat: String, lon: String): Single<List<ForecastUIModel>> =
         apiService
             .getForecastData(lat, lon)
-            .map {
-                it.list.map { forecastInfo ->
+            .map { forecastList ->
+                forecastList.list.map { forecastInfo ->
                     forecastInfo.toEntityModel()
                 }
                     .let { forecastEntityList ->
                         forecastDao.removeForecastData()
                         forecastDao.insertForecastData(forecastEntityList)
                     }
-                it.list.fromInfoToUIModelList()
+                forecastList.list.fromInfoToUIModelList()
             }
             .onErrorResumeNext {
                 forecastDao
                     .getForecastData()
-                    .map {
-                        it.fromEntityToUIModelList()
+                    .map { forecastEntityList ->
+                        forecastEntityList.fromEntityToUIModelList()
                     }
             }
             .subscribeOn(Schedulers.io())

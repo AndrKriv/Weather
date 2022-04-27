@@ -3,15 +3,15 @@ package com.example.weather.mvvm.presentation.fragments
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.weather.R
 import com.example.weather.databinding.FragmentForecastBinding
 import com.example.weather.mvvm.domain.viewBinding
 import com.example.weather.mvvm.presentation.adapter.ForecastAdapter
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.viewmodel.ForecastViewModel
-import com.example.weather.utils.isGone
-import com.example.weather.utils.isVisible
 
 class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
@@ -30,16 +30,18 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
             Toast.makeText(requireContext(), getString(R.string.no_data), Toast.LENGTH_SHORT)
                 .show()
         }
-
         forecastViewModel.loaderLiveData.observe(viewLifecycleOwner) {
-            if (it)
-                showProgressBar()
-            else
-                hideProgressBar()
+            binding.forecastProgressBar.isVisible = it
         }
         forecastViewModel.reloadLiveData.observe(viewLifecycleOwner) {
-            it
+            retrieveData()
         }
+        binding.forecastRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL
+            )
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +53,4 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
     override fun onLocationReceived(latitude: String, longitude: String) =
         forecastViewModel.getForecastData(latitude, longitude)
-
-    override fun showProgressBar() = binding.forecastProgressBar.isVisible()
-
-    override fun hideProgressBar() = binding.forecastProgressBar.isGone()
 }

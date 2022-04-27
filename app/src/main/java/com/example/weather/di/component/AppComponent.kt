@@ -1,6 +1,6 @@
 package com.example.weather.di.component
 
-import android.app.Application
+import android.content.Context
 import com.example.weather.di.module.*
 import com.example.weather.mvvm.presentation.BottomActivity
 import com.example.weather.mvvm.presentation.app.App
@@ -17,7 +17,8 @@ import javax.inject.Singleton
         NetworkModule::class,
         ViewModelFactoryModule::class,
         InternetMonitoringModule::class,
-        DatabaseModule::class
+        DatabaseModule::class,
+        LocationModule::class
     ]
 )
 interface AppComponent {
@@ -25,7 +26,7 @@ interface AppComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun application(application: Application): Builder
+        fun application(context: Context): Builder
 
         @BindsInstance
         fun baseUrl(baseUrl: String): Builder

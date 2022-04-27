@@ -23,30 +23,20 @@ class TodayViewModel @Inject constructor(
         interactor
             .observeNetworkState()
             .skip(1)
-            .filter {
-                it
-            }
+            .filter { it }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                reloadLiveData.call()
-            }, {})
+            .subscribe({ reloadLiveData.call() }, {})
             .addToDisposable()
     }
 
     fun getTodayData(lat: String, lon: String) {
         interactor
             .getCurrentWeather(lat, lon)
-            .doOnSubscribe {
-                loaderLiveData.value = true
-            }
-            .doAfterTerminate {
-                loaderLiveData.value = false
-            }
+            .doOnSubscribe { loaderLiveData.value = true }
+            .doAfterTerminate { loaderLiveData.value = false }
             .subscribe({ currentWeather ->
                 _todayLiveData.value = currentWeather
-            }, {
-                errorLiveData.value = it.message
-            })
+            }, { errorLiveData.value = it.message })
             .addToDisposable()
     }
 
