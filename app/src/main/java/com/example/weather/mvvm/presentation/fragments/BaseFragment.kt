@@ -56,6 +56,11 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
         retrieveData()
     }
 
+    override fun onStop() {
+        super.onStop()
+        locationManager.removeLocationUpdates()
+    }
+
     abstract fun onLocationReceived(latitude: String, longitude: String)
 
     fun retrieveData() = locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -74,16 +79,20 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
     }
 
     private fun checkGPSException(exception: Exception) =
-        if (exception is ResolvableApiException) resolveApiException(exception)
-        else Toast.makeText(requireContext(), exception.message.toString(), Toast.LENGTH_SHORT).show()
+        if (exception is ResolvableApiException) {
+            resolveApiException(exception)
+        } else {
+            Toast.makeText(requireContext(), exception.message.toString(), Toast.LENGTH_SHORT)
+                .show()
+        }
 
     private fun resolveApiException(exception: ResolvableApiException) =
         try {
-            resolutionForResult.launch(
-                IntentSenderRequest.Builder(exception.resolution).build()
-            )
+            val intentSenderRequest = IntentSenderRequest.Builder(exception.resolution).build()
+            resolutionForResult.launch(intentSenderRequest)
         } catch (throwable: Throwable) {
-            Toast.makeText(requireContext(), throwable.message.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), throwable.message.toString(), Toast.LENGTH_SHORT)
+                .show()
         }
 
     private fun showAlertMessageWhenDeniedSecondTime() =

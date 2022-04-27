@@ -18,6 +18,13 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
     private val binding: FragmentForecastBinding by viewBinding(FragmentForecastBinding::bind)
     private val forecastViewModel: ForecastViewModel by viewModels { viewModelFactory }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App)
+            .appComponent
+            .inject(this)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -42,13 +49,6 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
                 DividerItemDecoration.VERTICAL
             )
         )
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App)
-            .appComponent
-            .inject(this)
     }
 
     override fun onLocationReceived(latitude: String, longitude: String) =

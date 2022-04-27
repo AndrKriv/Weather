@@ -12,14 +12,11 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import javax.inject.Inject
 
-class LocationManager @Inject constructor(val context: Context) {
-
-    @Inject
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
-    @Inject
-    lateinit var locationRequest: LocationRequest
-
+class LocationManager @Inject constructor(
+    val context: Context,
+    val fusedLocationProviderClient: FusedLocationProviderClient,
+    val locationRequest: LocationRequest
+) {
     private lateinit var locationUpdatesCompleteAction: ((Location) -> Unit)
 
     private val locationCallback: LocationCallback =
@@ -44,4 +41,6 @@ class LocationManager @Inject constructor(val context: Context) {
             )
         }
     }
+
+    fun removeLocationUpdates() = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
 }

@@ -11,12 +11,21 @@ import com.example.weather.databinding.FragmentTodayBinding
 import com.example.weather.mvvm.domain.viewBinding
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.viewmodel.TodayViewModel
-import com.example.weather.utils.*
+import com.example.weather.utils.loadImg
+import com.example.weather.utils.toWindDirection
+import com.example.weather.utils.today
 
 class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
     private val binding: FragmentTodayBinding by viewBinding(FragmentTodayBinding::bind)
     private val todayViewModel: TodayViewModel by viewModels { viewModelFactory }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireContext().applicationContext as App)
+            .appComponent
+            .inject(this)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,13 +71,6 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
         todayViewModel.reloadLiveData.observe(viewLifecycleOwner) {
             retrieveData()
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (requireContext().applicationContext as App)
-            .appComponent
-            .inject(this)
     }
 
     override fun onLocationReceived(latitude: String, longitude: String) =
