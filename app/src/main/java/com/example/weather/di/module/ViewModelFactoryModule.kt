@@ -2,7 +2,7 @@ package com.example.weather.di.module
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.weather.mvvm.presentation.factory.ViewModelFactory
+import com.example.weather.core.ViewModelFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Provider

@@ -1,6 +1,6 @@
 package com.example.weather.di.module
 
-import com.example.weather.mvvm.data.ApiService
+import com.example.weather.data.network.api.ApiService
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit

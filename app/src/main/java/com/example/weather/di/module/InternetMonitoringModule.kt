@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import com.example.weather.mvvm.domain.connection.NetworkMonitoringUtil
-import com.example.weather.mvvm.domain.connection.NetworkStateManager
+import com.example.weather.core.connection.NetworkMonitoringUtil
+import com.example.weather.core.connection.NetworkStateManager
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

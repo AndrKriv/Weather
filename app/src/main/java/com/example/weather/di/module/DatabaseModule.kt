@@ -2,10 +2,10 @@ package com.example.weather.di.module
 
 import android.content.Context
 import androidx.room.Room
-import com.example.weather.room.dao.ForecastDao
-import com.example.weather.room.dao.TodayDao
-import com.example.weather.room.database.WeatherDatabase
-import com.example.weather.utils.Constants
+import com.example.weather.core.Constants
+import com.example.weather.data.database.WeatherDatabase
+import com.example.weather.data.database.dao.ForecastDao
+import com.example.weather.data.database.dao.TodayDao
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

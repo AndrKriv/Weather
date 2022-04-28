@@ -2,7 +2,6 @@ package com.example.weather.utils
 
 import com.example.weather.R
 
-
 fun loadImg(string: String): Int {
     return when (string) {
         "ясно" -> R.drawable.sun
