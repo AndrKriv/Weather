@@ -47,8 +47,11 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
     private val resolutionForResult =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
-            if (activityResult.resultCode == Activity.RESULT_OK) startLocationUpdates()
-            else requestGps()
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+                startLocationUpdates()
+            } else {
+                requestGps()
+            }
         }
 
     override fun onStart() {
@@ -82,8 +85,7 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
         if (exception is ResolvableApiException) {
             resolveApiException(exception)
         } else {
-            Toast.makeText(requireContext(), exception.message.toString(), Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), exception.message.toString(), Toast.LENGTH_SHORT).show()
         }
 
     private fun resolveApiException(exception: ResolvableApiException) =
@@ -91,8 +93,7 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
             val intentSenderRequest = IntentSenderRequest.Builder(exception.resolution).build()
             resolutionForResult.launch(intentSenderRequest)
         } catch (throwable: Throwable) {
-            Toast.makeText(requireContext(), throwable.message.toString(), Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), throwable.message.toString(), Toast.LENGTH_SHORT).show()
         }
 
     private fun showAlertMessageWhenDeniedSecondTime() =

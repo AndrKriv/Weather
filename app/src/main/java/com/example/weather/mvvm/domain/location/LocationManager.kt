@@ -13,9 +13,9 @@ import com.google.android.gms.location.LocationResult
 import javax.inject.Inject
 
 class LocationManager @Inject constructor(
-    val context: Context,
-    val fusedLocationProviderClient: FusedLocationProviderClient,
-    val locationRequest: LocationRequest
+    private val context: Context,
+    private val fusedLocationProviderClient: FusedLocationProviderClient,
+    private val locationRequest: LocationRequest
 ) {
     private lateinit var locationUpdatesCompleteAction: ((Location) -> Unit)
 
