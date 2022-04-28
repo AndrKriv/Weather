@@ -5,28 +5,25 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.databinding.ItemForecastBinding
-import com.example.weather.mvvm.core.ForecastInfo
+import com.example.weather.mvvm.presentation.ForecastUIModel
 import com.example.weather.utils.loadImg
-import com.example.weather.utils.toDate
 
 class ForecastViewHolder(private val binding: ItemForecastBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bindView(item: ForecastInfo) {
+    fun bindView(item: ForecastUIModel) {
         with(binding) {
-            timeTv.text = item.time.toDate()
-            degreesTv.text = item.temp.degrees
-            descriptionTv.text = item.weather.single().description
-            weatherImg.setImageResource(
-                loadImg(item.weather.single().description)
-            )
+            timeTv.text = item.date
+            degreesTv.text = item.degrees.toString()
+            descriptionTv.text = item.description
+            weatherImg.setImageResource(loadImg(item.description))
         }
     }
 }
 
 class ForecastAdapter : RecyclerView.Adapter<ForecastViewHolder>() {
 
-    private val items = mutableListOf<ForecastInfo>()
+    private val items = mutableListOf<ForecastUIModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder =
         ForecastViewHolder(
@@ -43,7 +40,7 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastViewHolder>() {
     override fun getItemCount() = items.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: List<ForecastInfo>) {
+    fun setItems(items: List<ForecastUIModel>) {
         this.items.clear()
         this.items.addAll(items)
         notifyDataSetChanged()

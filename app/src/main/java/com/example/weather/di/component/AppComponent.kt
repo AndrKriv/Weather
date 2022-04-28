@@ -1,10 +1,7 @@
 package com.example.weather.di.component
 
-import android.app.Application
-import com.example.weather.di.module.InternetMonitoringModule
-import com.example.weather.di.module.NetworkModule
-import com.example.weather.di.module.ViewModelFactoryModule
-import com.example.weather.di.module.ViewModelModule
+import android.content.Context
+import com.example.weather.di.module.*
 import com.example.weather.mvvm.presentation.BottomActivity
 import com.example.weather.mvvm.presentation.app.App
 import com.example.weather.mvvm.presentation.fragments.ForecastFragment
@@ -16,18 +13,20 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
-    ViewModelModule::class,
-    NetworkModule::class,
-    ViewModelFactoryModule::class,
-    InternetMonitoringModule::class
-]
+        ViewModelsModule::class,
+        NetworkModule::class,
+        ViewModelFactoryModule::class,
+        InternetMonitoringModule::class,
+        DatabaseModule::class,
+        LocationModule::class
+    ]
 )
 interface AppComponent {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun application(application: Application): Builder
+        fun application(context: Context): Builder
 
         @BindsInstance
         fun baseUrl(baseUrl: String): Builder

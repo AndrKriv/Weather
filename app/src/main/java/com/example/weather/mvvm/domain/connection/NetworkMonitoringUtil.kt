@@ -5,15 +5,12 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import javax.inject.Inject
 
 class NetworkMonitoringUtil @Inject constructor(
     private val connectivityManager: ConnectivityManager,
     private val networkStateManager: NetworkStateManager,
-    private val networkRequest: NetworkRequest
+    networkRequest: NetworkRequest
 ) : NetworkCallback() {
 
     init {

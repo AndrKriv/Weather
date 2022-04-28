@@ -4,112 +4,97 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.os.Looper
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.weather.R
+import com.example.weather.mvvm.domain.location.LocationManager
 import com.example.weather.mvvm.presentation.factory.ViewModelFactory
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import javax.inject.Inject
 
 abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var locationManager: LocationManager
+
+    @Inject
+    lateinit var locationSettingsRequest: LocationSettingsRequest
 
     private val locationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             when {
                 granted -> {
-                    checkPermissions()
-                    startLocationUpdates()
-                }
-                !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    showAlertMessageWhenDeniedSecondTime()
+                    requestGps()
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showAlertMessageWhenDeniedFirstTime()
                 }
-            }
-        }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(layoutId, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                super.onLocationResult(locationResult)
-                for (loc in locationResult.locations) {
-                    onWeatherDataReceived(loc.latitude.toString(), loc.longitude.toString())
+                !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                    showAlertMessageWhenDeniedSecondTime()
                 }
             }
         }
-    }
+
+    private val resolutionForResult =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+                startLocationUpdates()
+            } else {
+                requestGps()
+            }
+        }
 
     override fun onStart() {
         super.onStart()
-        locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        retrieveData()
     }
 
-    override fun onPause() {
-        super.onPause()
-        stopLocationUpdates()
+    override fun onStop() {
+        super.onStop()
+        locationManager.removeLocationUpdates()
     }
 
-    abstract fun onWeatherDataReceived(latitude: String, longitude: String)
+    abstract fun onLocationReceived(latitude: String, longitude: String)
 
-    private fun checkPermissions() {
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(LocationRequest())
-        val task = LocationServices.getSettingsClient(requireContext())
-            .checkLocationSettings(builder.build())
+    fun retrieveData() = locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
-        task.addOnCompleteListener { result ->
-            try {
-                result.getResult(ApiException::class.java)
-            } catch (e: ResolvableApiException) {
-                e.startResolutionForResult(
-                    requireActivity(),
-                    Activity.RESULT_CANCELED
-                )
-            }
+    private fun startLocationUpdates() =
+        locationManager.requestLocationUpdates {
+            onLocationReceived(it.latitude.toString(), it.longitude.toString())
         }
+
+    private fun requestGps() {
+        LocationServices
+            .getSettingsClient(requireContext())
+            .checkLocationSettings(locationSettingsRequest)
+            .addOnSuccessListener { startLocationUpdates() }
+            .addOnFailureListener(::checkGPSException)
     }
 
-    private fun startLocationUpdates() {
-        fusedLocationProviderClient.requestLocationUpdates(
-            LocationRequest(),
-            locationCallback,
-            Looper.getMainLooper()
-        )
-    }
+    private fun checkGPSException(exception: Exception) =
+        if (exception is ResolvableApiException) {
+            resolveApiException(exception)
+        } else {
+            Toast.makeText(requireContext(), exception.message.toString(), Toast.LENGTH_SHORT).show()
+        }
 
-    private fun stopLocationUpdates() {
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-    }
+    private fun resolveApiException(exception: ResolvableApiException) =
+        try {
+            val intentSenderRequest = IntentSenderRequest.Builder(exception.resolution).build()
+            resolutionForResult.launch(intentSenderRequest)
+        } catch (throwable: Throwable) {
+            Toast.makeText(requireContext(), throwable.message.toString(), Toast.LENGTH_SHORT).show()
+        }
 
     private fun showAlertMessageWhenDeniedSecondTime() =
         AlertDialog

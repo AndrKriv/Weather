@@ -1,6 +1,5 @@
 package com.example.weather.di.module
 
-import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -16,9 +15,9 @@ class InternetMonitoringModule {
 
     @Provides
     @Singleton
-    fun provideConnectivityManager(application: Application): ConnectivityManager =
+    fun provideConnectivityManager(context: Context): ConnectivityManager =
         try {
-            application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         } catch (e: Exception) {
             throw RuntimeException("Error getting Connectivity Manager")
         }

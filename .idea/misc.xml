@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/drawable/shape.xml" value="0.2611111111111111" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/font/aladin.xml" value="0.2611111111111111" />
+        <entry key="..\:/Android/Innowise/weather/app/src/main/res/font/allerta_stencil.xml" value="0.2611111111111111" />
         <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout-land/fragment_today.xml" value="0.23236331569664903" />
         <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout-land/item_forecast.xml" value="0.23236331569664903" />
         <entry key="..\:/Android/Innowise/weather/app/src/main/res/layout/activity_bottom.xml" value="0.2" />
@@ -34,7 +37,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
