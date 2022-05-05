@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.weather.R
 import com.example.weather.app.App
@@ -39,8 +40,10 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
         forecastViewModel.loaderLiveData.observe(viewLifecycleOwner) {
             binding.forecastProgressBar.isVisible = it
         }
-        forecastViewModel.reloadLiveData.observe(viewLifecycleOwner) {
-            retrieveData()
+        lifecycleScope.launchWhenStarted {
+            forecastViewModel.reloadFlow.collect{
+                retrieveData()
+            }
         }
         binding.forecastRecyclerView.addItemDecoration(
             DividerItemDecoration(

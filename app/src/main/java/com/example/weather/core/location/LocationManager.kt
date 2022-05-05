@@ -17,11 +17,11 @@ class LocationManager @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val locationRequest: LocationRequest
 ) {
-    private lateinit var locationUpdatesCompleteAction: ((Location) -> Unit)
-
-    private val locationCallback: LocationCallback =
+    lateinit var locationUpdatesCompleteAction: ((Location) -> Unit)
+    private var locationCallback: LocationCallback =
         object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
                 locationUpdatesCompleteAction.invoke(locationResult.lastLocation)
                 fusedLocationProviderClient.removeLocationUpdates(this)
             }

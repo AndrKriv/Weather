@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.weather.R
 import com.example.weather.app.App
 import com.example.weather.core.BaseFragment
@@ -14,6 +15,7 @@ import com.example.weather.extension.toWindDirection
 import com.example.weather.extension.today
 import com.example.weather.extension.viewBinding
 import com.example.weather.utils.loadImg
+import kotlinx.coroutines.launch
 
 class TodayFragment : BaseFragment(R.layout.fragment_today) {
 
@@ -68,8 +70,10 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
         todayViewModel.loaderLiveData.observe(viewLifecycleOwner) {
             binding.todayProgressBar.isVisible = it
         }
-        todayViewModel.reloadLiveData.observe(viewLifecycleOwner) {
-            retrieveData()
+        viewLifecycleOwner.lifecycleScope.launch {
+            todayViewModel.reloadFlow.collect {
+                retrieveData()
+            }
         }
     }
 

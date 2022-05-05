@@ -1,13 +1,15 @@
 package com.example.weather.core.connection
 
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class NetworkStateManager @Inject constructor() {
 
-    val connectionObserver = BehaviorSubject.create<Boolean>()
+    private val _state = MutableStateFlow<Boolean>(true)
+    val state = _state.asStateFlow()
 
     fun setNetworkConnectivityStatus(connectivityStatus: Boolean) {
-        connectionObserver.onNext(connectivityStatus)
+        _state.value = connectivityStatus
     }
 }

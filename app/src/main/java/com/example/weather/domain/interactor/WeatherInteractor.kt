@@ -10,7 +10,7 @@ import com.example.weather.presentation.today.model.TodayUIModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class WeatherInteractor @Inject constructor(
@@ -19,8 +19,8 @@ class WeatherInteractor @Inject constructor(
     private val forecastDao: ForecastDao,
     val networkStateManager: NetworkStateManager
 ) {
-    fun observeNetworkState(): BehaviorSubject<Boolean> =
-        networkStateManager.connectionObserver
+    fun observeStateFlow(): StateFlow<Boolean> =
+        networkStateManager.state
 
     fun getCurrentWeather(
         lat: String,

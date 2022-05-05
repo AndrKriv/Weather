@@ -3,35 +3,43 @@ package com.example.weather.presentation.today
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.weather.core.BaseViewModel
 import com.example.weather.core.SingleLiveEvent
 import com.example.weather.domain.interactor.WeatherInteractor
 import com.example.weather.presentation.today.model.TodayUIModel
-import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TodayViewModel @Inject constructor(
-    private val interactor: WeatherInteractor
+    private val weatherInteractor: WeatherInteractor
 ) : BaseViewModel() {
 
     private val _todayLiveData = MutableLiveData<TodayUIModel>()
     val todayLiveData: LiveData<TodayUIModel> = _todayLiveData
     val errorLiveData = SingleLiveEvent<String>()
     val loaderLiveData = SingleLiveEvent<Boolean>()
-    val reloadLiveData: SingleLiveEvent<Unit> = SingleLiveEvent()
+
+    private val _reloadFlow = MutableSharedFlow<Unit>()
+    val reloadFlow: SharedFlow<Unit> = _reloadFlow.asSharedFlow()
 
     init {
-        interactor
-            .observeNetworkState()
-            .skip(1)
-            .filter { it }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ reloadLiveData.call() }, {})
-            .addToDisposable()
+        viewModelScope.launch {
+            weatherInteractor
+                .observeStateFlow()
+                .drop(1)
+                .filter {
+                    it
+                }
+                .collect {
+                    _reloadFlow.emit(Unit)
+                }
+        }
     }
 
     fun getTodayData(lat: String, lon: String) {
-        interactor
+        weatherInteractor
             .getCurrentWeather(lat, lon)
             .doOnSubscribe { loaderLiveData.value = true }
             .doAfterTerminate { loaderLiveData.value = false }
