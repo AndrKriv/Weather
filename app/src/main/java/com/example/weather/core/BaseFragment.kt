@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,10 +47,10 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
 
     private val resolutionForResult =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
-            if (activityResult.resultCode == Activity.RESULT_OK) {
-                startLocationUpdates()
-            } else {
-                requestGps()
+            when (activityResult.resultCode) {
+                Activity.RESULT_OK -> startLocationUpdates()
+                Activity.RESULT_CANCELED -> requestGps()
+                else -> Log.e("AAA", "else")
             }
         }
 
@@ -124,7 +125,7 @@ abstract class BaseFragment(@LayoutRes val layoutId: Int) : Fragment(layoutId) {
             .setMessage(getString(R.string.first_dialog_message))
             .setCancelable(false)
             .setPositiveButton(R.string.yes) { _, _ ->
-                locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                retrieveData()
             }
             .create()
             .show()

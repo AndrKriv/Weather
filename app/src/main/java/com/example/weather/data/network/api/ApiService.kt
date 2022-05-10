@@ -1,8 +1,8 @@
 package com.example.weather.data.network.api
 
+import com.example.weather.core.Constants
 import com.example.weather.domain.entity.ForecastList
 import com.example.weather.domain.entity.TodayInfo
-import com.example.weather.core.Constants
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query

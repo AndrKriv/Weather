@@ -1,6 +1,7 @@
 package com.example.weather.di.module
 
 import android.content.Context
+import com.example.weather.core.location.LocationManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices

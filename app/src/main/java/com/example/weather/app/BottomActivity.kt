@@ -1,15 +1,13 @@
 package com.example.weather.app
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.core.connection.NetworkStateManager
 import com.example.weather.databinding.ActivityBottomBinding
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
 class BottomActivity : AppCompatActivity() {
@@ -18,8 +16,6 @@ class BottomActivity : AppCompatActivity() {
 
     @Inject
     lateinit var networkStateManager: NetworkStateManager
-
-    private lateinit var disposable: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +30,10 @@ class BottomActivity : AppCompatActivity() {
             .appComponent
             .inject(this)
 
-        disposable = networkStateManager
-            .connectionObserver
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
+        lifecycleScope.launchWhenStarted {
+            networkStateManager.state.collect {
                 binding.errorMessage.isVisible = !it
-            }, {
-                Log.e("AAA", it.message.toString())
-            })
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable.dispose()
+            }
+        }
     }
 }

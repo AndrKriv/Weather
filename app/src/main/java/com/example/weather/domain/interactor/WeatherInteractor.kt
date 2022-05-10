@@ -10,7 +10,7 @@ import com.example.weather.presentation.today.model.TodayUIModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class WeatherInteractor @Inject constructor(
@@ -19,10 +19,9 @@ class WeatherInteractor @Inject constructor(
     private val forecastDao: ForecastDao,
     val networkStateManager: NetworkStateManager
 ) {
-    fun observeNetworkState(): BehaviorSubject<Boolean> =
-        networkStateManager.connectionObserver
+    fun observeNetworkState(): StateFlow<Boolean> = networkStateManager.state
 
-    fun getCurrentWeather(
+    fun getTodayData(
         lat: String,
         lon: String
     ): Single<TodayUIModel> =
@@ -38,9 +37,7 @@ class WeatherInteractor @Inject constructor(
             .onErrorResumeNext {
                 todayDao
                     .getTodayData()
-                    .map { todayEntity ->
-                        todayEntity.toUIModel()
-                    }
+                    .map { todayEntity -> todayEntity.toUIModel() }
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -49,9 +46,7 @@ class WeatherInteractor @Inject constructor(
         apiService
             .getForecastData(lat, lon)
             .map { forecastList ->
-                forecastList.list.map { forecastInfo ->
-                    forecastInfo.toEntityModel()
-                }
+                forecastList.list.map { forecastInfo -> forecastInfo.toEntityModel() }
                     .let { forecastEntityList ->
                         forecastDao.removeForecastData()
                         forecastDao.insertForecastData(forecastEntityList)
@@ -61,9 +56,7 @@ class WeatherInteractor @Inject constructor(
             .onErrorResumeNext {
                 forecastDao
                     .getForecastData()
-                    .map { forecastEntityList ->
-                        forecastEntityList.fromEntityToUIModelList()
-                    }
+                    .map { forecastEntityList -> forecastEntityList.fromEntityToUIModelList() }
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
