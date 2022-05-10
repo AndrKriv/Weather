@@ -33,7 +33,7 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             launch {
-                todayViewModel.todaySharedFlow.filterNotNull().collect { todayUIModel ->
+                todayViewModel.todayStateFlow.filterNotNull().collect { todayUIModel ->
                     with(binding) {
                         tvCity.text = getString(R.string.city, todayUIModel.city)
                         tvDate.text = getString(R.string.date, todayUIModel.date.today())
@@ -75,7 +75,7 @@ class TodayFragment : BaseFragment(R.layout.fragment_today) {
                 }
             }
             launch {
-                todayViewModel.loaderSharedFlow.collect { isVisible ->
+                todayViewModel.loaderStateFlow.collect { isVisible ->
                     binding.todayProgressBar.isVisible = isVisible
                 }
             }

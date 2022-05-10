@@ -34,7 +34,7 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
         binding.forecastRecyclerView.adapter = forecastAdapter
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             launch {
-                forecastViewModel.forecastSharedFlow.collect { forecastUIModel ->
+                forecastViewModel.forecastStateFlow.collect { forecastUIModel ->
                         forecastAdapter.setItems(forecastUIModel)
                 }
             }
@@ -48,7 +48,7 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
                 }
             }
             launch {
-                forecastViewModel.loaderSharedFlow.collect { isVisible ->
+                forecastViewModel.loaderStateFlow.collect { isVisible ->
                     binding.forecastProgressBar.isVisible = isVisible
                 }
             }

@@ -12,14 +12,14 @@ class ForecastViewModel @Inject constructor(
     private val weatherInteractor: WeatherInteractor
 ) : BaseViewModel() {
 
-    private val _forecastSharedFlow = MutableStateFlow<List<ForecastUIModel>>(emptyList())
-    val forecastSharedFlow: StateFlow<List<ForecastUIModel>> = _forecastSharedFlow.asStateFlow()
+    private val _forecastStateFlow = MutableStateFlow<List<ForecastUIModel>>(emptyList())
+    val forecastStateFlow: StateFlow<List<ForecastUIModel>> = _forecastStateFlow.asStateFlow()
 
     private val _errorSharedFlow = MutableSharedFlow<String>(replay = 0)
     val errorSharedFlow: SharedFlow<String> = _errorSharedFlow.asSharedFlow()
 
-    private val _loaderSharedFlow = MutableStateFlow<Boolean>(false)
-    val loaderSharedFlow: StateFlow<Boolean> = _loaderSharedFlow.asStateFlow()
+    private val _loaderStateFlow = MutableStateFlow<Boolean>(false)
+    val loaderStateFlow: StateFlow<Boolean> = _loaderStateFlow.asStateFlow()
 
     private val _reloadFlow = MutableSharedFlow<Unit>(replay = 0)
     val reloadFlow: SharedFlow<Unit> = _reloadFlow.asSharedFlow()
@@ -37,10 +37,10 @@ class ForecastViewModel @Inject constructor(
     fun getForecastData(lat: String, lon: String) =
         weatherInteractor
             .getForecastData(lat, lon)
-            .doOnSubscribe { viewModelScope.launch { _loaderSharedFlow.emit(true) } }
-            .doAfterTerminate { viewModelScope.launch { _loaderSharedFlow.emit(false) } }
+            .doOnSubscribe { viewModelScope.launch { _loaderStateFlow.value = true } }
+            .doAfterTerminate { viewModelScope.launch { _loaderStateFlow.value = false } }
             .subscribe({ forecastWeather ->
-                viewModelScope.launch { _forecastSharedFlow.emit(forecastWeather) }
+                viewModelScope.launch { _forecastStateFlow.value = forecastWeather }
             }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
             .addToDisposable()
 }

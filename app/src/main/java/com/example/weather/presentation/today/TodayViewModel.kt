@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.core.BaseViewModel
 import com.example.weather.domain.interactor.WeatherInteractor
 import com.example.weather.presentation.today.model.TodayUIModel
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,14 +13,14 @@ class TodayViewModel @Inject constructor(
     private val weatherInteractor: WeatherInteractor
 ) : BaseViewModel() {
 
-    private val _todaySharedFlow = MutableStateFlow<TodayUIModel?>(null)
-    val todaySharedFlow: StateFlow<TodayUIModel?> = _todaySharedFlow.asStateFlow()
+    private val _todayStateFlow = MutableStateFlow<TodayUIModel?>(null)
+    val todayStateFlow: StateFlow<TodayUIModel?> = _todayStateFlow.asStateFlow()
 
     private val _errorSharedFlow = MutableSharedFlow<String>(replay = 0)
     val errorSharedFlow: SharedFlow<String> = _errorSharedFlow.asSharedFlow()
 
-    private val _loaderSharedFlow = MutableStateFlow<Boolean>(false)
-    val loaderSharedFlow: StateFlow<Boolean> = _loaderSharedFlow.asStateFlow()
+    private val _loaderStateFlow = MutableStateFlow<Boolean>(false)
+    val loaderStateFlow: StateFlow<Boolean> = _loaderStateFlow.asStateFlow()
 
     private val _reloadFlow = MutableSharedFlow<Unit>(replay = 0)
     val reloadFlow: SharedFlow<Unit> = _reloadFlow.asSharedFlow()
@@ -39,10 +38,10 @@ class TodayViewModel @Inject constructor(
     fun getTodayData(lat: String, lon: String) =
         weatherInteractor
             .getTodayData(lat, lon)
-            .doOnSubscribe { viewModelScope.launch { _loaderSharedFlow.emit(true) } }
-            .doAfterTerminate { viewModelScope.launch { _loaderSharedFlow.emit(false) } }
+            .doOnSubscribe { viewModelScope.launch { _loaderStateFlow.value = true } }
+            .doAfterTerminate { viewModelScope.launch { _loaderStateFlow.value = false } }
             .subscribe({ currentWeather ->
-                viewModelScope.launch { _todaySharedFlow.emit(currentWeather) }
+                viewModelScope.launch { _todayStateFlow.value = currentWeather }
             }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
             .addToDisposable()
 
