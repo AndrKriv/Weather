@@ -13,6 +13,7 @@ import com.example.weather.core.BaseFragment
 import com.example.weather.databinding.FragmentForecastBinding
 import com.example.weather.extension.viewBinding
 import com.example.weather.presentation.forecast.adapter.ForecastAdapter
+import kotlinx.coroutines.launch
 
 class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
@@ -32,22 +33,28 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
         val forecastAdapter = ForecastAdapter()
         binding.forecastRecyclerView.adapter = forecastAdapter
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            forecastViewModel.forecastSharedFlow.collect { forecastUIModel ->
-                forecastAdapter.setItems(forecastUIModel)
+            launch {
+                forecastViewModel.forecastSharedFlow.collect { forecastUIModel ->
+                        forecastAdapter.setItems(forecastUIModel)
+                }
             }
-        }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            forecastViewModel.errorSharedFlow.collect {
-                Toast.makeText(requireContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show()
+            launch {
+                forecastViewModel.errorSharedFlow.collect {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.no_data),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            forecastViewModel.loaderSharedFlow.collect { isVisible ->
-                binding.forecastProgressBar.isVisible = isVisible
+            launch {
+                forecastViewModel.loaderSharedFlow.collect { isVisible ->
+                    binding.forecastProgressBar.isVisible = isVisible
+                }
             }
-        }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            forecastViewModel.reloadFlow.collect { retrieveData() }
+            launch {
+                forecastViewModel.reloadFlow.collect { retrieveData() }
+            }
         }
         binding.forecastRecyclerView.addItemDecoration(
             DividerItemDecoration(

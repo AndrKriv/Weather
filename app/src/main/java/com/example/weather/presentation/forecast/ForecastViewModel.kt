@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.core.BaseViewModel
 import com.example.weather.domain.interactor.WeatherInteractor
 import com.example.weather.presentation.forecast.model.ForecastUIModel
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,19 +12,16 @@ class ForecastViewModel @Inject constructor(
     private val weatherInteractor: WeatherInteractor
 ) : BaseViewModel() {
 
-    private val _forecastSharedFlow = MutableSharedFlow<List<ForecastUIModel>>(
-        replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    val forecastSharedFlow: SharedFlow<List<ForecastUIModel>> = _forecastSharedFlow.asSharedFlow()
+    private val _forecastSharedFlow = MutableStateFlow<List<ForecastUIModel>>(emptyList())
+    val forecastSharedFlow: StateFlow<List<ForecastUIModel>> = _forecastSharedFlow.asStateFlow()
 
-    private val _errorSharedFlow = MutableSharedFlow<String>()
+    private val _errorSharedFlow = MutableSharedFlow<String>(replay = 0)
     val errorSharedFlow: SharedFlow<String> = _errorSharedFlow.asSharedFlow()
 
-    private val _loaderSharedFlow = MutableSharedFlow<Boolean>()
-    val loaderSharedFlow: SharedFlow<Boolean> = _loaderSharedFlow.asSharedFlow()
+    private val _loaderSharedFlow = MutableStateFlow<Boolean>(false)
+    val loaderSharedFlow: StateFlow<Boolean> = _loaderSharedFlow.asStateFlow()
 
-    private val _reloadFlow = MutableSharedFlow<Unit>()
+    private val _reloadFlow = MutableSharedFlow<Unit>(replay = 0)
     val reloadFlow: SharedFlow<Unit> = _reloadFlow.asSharedFlow()
 
     init {
@@ -43,9 +39,8 @@ class ForecastViewModel @Inject constructor(
             .getForecastData(lat, lon)
             .doOnSubscribe { viewModelScope.launch { _loaderSharedFlow.emit(true) } }
             .doAfterTerminate { viewModelScope.launch { _loaderSharedFlow.emit(false) } }
-            .subscribe(
-                { forecastWeather ->
-                    viewModelScope.launch { _forecastSharedFlow.emit(forecastWeather) }
-                }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
+            .subscribe({ forecastWeather ->
+                viewModelScope.launch { _forecastSharedFlow.emit(forecastWeather) }
+            }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
             .addToDisposable()
 }

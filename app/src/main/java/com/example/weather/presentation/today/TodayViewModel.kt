@@ -14,19 +14,16 @@ class TodayViewModel @Inject constructor(
     private val weatherInteractor: WeatherInteractor
 ) : BaseViewModel() {
 
-    private val _todaySharedFlow = MutableSharedFlow<TodayUIModel>(
-        replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    val todaySharedFlow: SharedFlow<TodayUIModel> = _todaySharedFlow.asSharedFlow()
+    private val _todaySharedFlow = MutableStateFlow<TodayUIModel?>(null)
+    val todaySharedFlow: StateFlow<TodayUIModel?> = _todaySharedFlow.asStateFlow()
 
-    private val _errorSharedFlow = MutableSharedFlow<String>()
+    private val _errorSharedFlow = MutableSharedFlow<String>(replay = 0)
     val errorSharedFlow: SharedFlow<String> = _errorSharedFlow.asSharedFlow()
 
-    private val _loaderSharedFlow = MutableSharedFlow<Boolean>()
-    val loaderSharedFlow: SharedFlow<Boolean> = _loaderSharedFlow.asSharedFlow()
+    private val _loaderSharedFlow = MutableStateFlow<Boolean>(false)
+    val loaderSharedFlow: StateFlow<Boolean> = _loaderSharedFlow.asStateFlow()
 
-    private val _reloadFlow = MutableSharedFlow<Unit>()
+    private val _reloadFlow = MutableSharedFlow<Unit>(replay = 0)
     val reloadFlow: SharedFlow<Unit> = _reloadFlow.asSharedFlow()
 
     init {
