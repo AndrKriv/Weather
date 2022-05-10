@@ -1,13 +1,11 @@
 package com.example.weather.presentation.today
 
 import android.content.Intent
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weather.core.BaseViewModel
-import com.example.weather.core.SingleLiveEvent
 import com.example.weather.domain.interactor.WeatherInteractor
 import com.example.weather.presentation.today.model.TodayUIModel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,10 +14,17 @@ class TodayViewModel @Inject constructor(
     private val weatherInteractor: WeatherInteractor
 ) : BaseViewModel() {
 
-    private val _todayLiveData = MutableLiveData<TodayUIModel>()
-    val todayLiveData: LiveData<TodayUIModel> = _todayLiveData
-    val errorLiveData = SingleLiveEvent<String>()
-    val loaderLiveData = SingleLiveEvent<Boolean>()
+    private val _todaySharedFlow = MutableSharedFlow<TodayUIModel>(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val todaySharedFlow: SharedFlow<TodayUIModel> = _todaySharedFlow.asSharedFlow()
+
+    private val _errorSharedFlow = MutableSharedFlow<String>()
+    val errorSharedFlow: SharedFlow<String> = _errorSharedFlow.asSharedFlow()
+
+    private val _loaderSharedFlow = MutableSharedFlow<Boolean>()
+    val loaderSharedFlow: SharedFlow<Boolean> = _loaderSharedFlow.asSharedFlow()
 
     private val _reloadFlow = MutableSharedFlow<Unit>()
     val reloadFlow: SharedFlow<Unit> = _reloadFlow.asSharedFlow()
@@ -27,27 +32,23 @@ class TodayViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             weatherInteractor
-                .observeStateFlow()
+                .observeNetworkState()
                 .drop(1)
-                .filter {
-                    it
-                }
-                .collect {
-                    _reloadFlow.emit(Unit)
-                }
+                .filter { isConnected -> isConnected }
+                .collect { _reloadFlow.emit(Unit) }
         }
     }
 
-    fun getTodayData(lat: String, lon: String) {
+    fun getTodayData(lat: String, lon: String) =
         weatherInteractor
-            .getCurrentWeather(lat, lon)
-            .doOnSubscribe { loaderLiveData.value = true }
-            .doAfterTerminate { loaderLiveData.value = false }
+            .getTodayData(lat, lon)
+            .doOnSubscribe { viewModelScope.launch { _loaderSharedFlow.emit(true) } }
+            .doAfterTerminate { viewModelScope.launch { _loaderSharedFlow.emit(false) } }
             .subscribe({ currentWeather ->
-                _todayLiveData.value = currentWeather
-            }, { errorLiveData.value = it.message })
+                viewModelScope.launch { _todaySharedFlow.emit(currentWeather) }
+            }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
             .addToDisposable()
-    }
+
 
     fun sendInfoChooser(messageText: String): Intent =
         Intent.createChooser(

@@ -31,19 +31,23 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
 
         val forecastAdapter = ForecastAdapter()
         binding.forecastRecyclerView.adapter = forecastAdapter
-        forecastViewModel.forecastLiveData.observe(viewLifecycleOwner) {
-            forecastAdapter.setItems(it)
-        }
-        forecastViewModel.errorLiveData.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show()
-        }
-        forecastViewModel.loaderLiveData.observe(viewLifecycleOwner) {
-            binding.forecastProgressBar.isVisible = it
-        }
-        lifecycleScope.launchWhenStarted {
-            forecastViewModel.reloadFlow.collect{
-                retrieveData()
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            forecastViewModel.forecastSharedFlow.collect { forecastUIModel ->
+                forecastAdapter.setItems(forecastUIModel)
             }
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            forecastViewModel.errorSharedFlow.collect {
+                Toast.makeText(requireContext(), getString(R.string.no_data), Toast.LENGTH_SHORT).show()
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            forecastViewModel.loaderSharedFlow.collect { isVisible ->
+                binding.forecastProgressBar.isVisible = isVisible
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            forecastViewModel.reloadFlow.collect { retrieveData() }
         }
         binding.forecastRecyclerView.addItemDecoration(
             DividerItemDecoration(

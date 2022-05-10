@@ -21,13 +21,6 @@ fun ForecastEntity.toUIModel(): ForecastUIModel =
         degrees = degrees
     )
 
-fun ForecastUIModel.toEntityModel(): ForecastEntity =
-    ForecastEntity(
-        date = date.toDate(),
-        description = description,
-        degrees = degrees
-    )
-
 fun ForecastInfo.toEntityModel(): ForecastEntity =
     ForecastEntity(
         date = time.toDate(),
@@ -55,26 +48,26 @@ fun List<ForecastInfo>.fromInfoToUIModelList(): List<ForecastUIModel> {
 
 fun TodayInfo.toUIModel(): TodayUIModel =
     TodayUIModel(
-        city = this.city,
-        date = this.date.toDate(),
-        degrees = this.main.temp.toDouble(),
-        description = this.weather.single().description,
-        pressure = this.main.pressure.convertPressure(),
-        humidity = this.main.humidity.toDouble(),
-        wind = this.wind.deg,
-        windSpeed = this.wind.speed.toDouble()
+        city = city,
+        date = date,
+        degrees = main.temp.toDouble(),
+        description = weather.single().description,
+        pressure = main.pressure.convertPressure(),
+        humidity = main.humidity.toDouble(),
+        wind = wind.deg,
+        windSpeed = wind.speed.toDouble()
     )
 
 fun TodayInfo.toEntity(): TodayEntity =
     TodayEntity(
-        city = this.city,
-        date = this.date,
-        degrees = this.main.temp.toDouble(),
-        description = this.weather.single().description,
-        pressure = this.main.pressure.convertPressure(),
-        humidity = this.main.humidity.toDouble(),
-        wind = this.wind.deg,
-        windSpeed = this.wind.speed.toDouble()
+        city = city,
+        date = date,
+        degrees = main.temp.toDouble(),
+        description = weather.single().description,
+        pressure = main.pressure.convertPressure(),
+        humidity = main.humidity.toDouble(),
+        wind = wind.deg,
+        windSpeed = wind.speed.toDouble()
     )
 
 fun TodayEntity.toUIModel(): TodayUIModel =
