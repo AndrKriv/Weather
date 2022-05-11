@@ -5,17 +5,16 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.weather.data.database.model.TodayEntity
-import io.reactivex.Single
 
 @Dao
 interface TodayDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTodayData(todayEntity: TodayEntity)//: Completable
+    fun insertTodayData(todayEntity: TodayEntity)
 
     @Query("SELECT * FROM today_table")
-    fun getTodayData(): Single<TodayEntity>
+    suspend fun getTodayData(): TodayEntity
 
     @Query("DELETE FROM today_table")
-    fun removeTodayData()//: Completable
+    fun removeTodayData()
 }

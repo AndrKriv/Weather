@@ -7,10 +7,7 @@ import com.example.weather.data.network.api.ApiService
 import com.example.weather.extension.*
 import com.example.weather.presentation.forecast.model.ForecastUIModel
 import com.example.weather.presentation.today.model.TodayUIModel
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class WeatherInteractor @Inject constructor(
@@ -24,40 +21,36 @@ class WeatherInteractor @Inject constructor(
     fun getTodayData(
         lat: String,
         lon: String
-    ): Single<TodayUIModel> =
-        apiService
-            .getTodayData(lat, lon)
-            .map { todayInfo ->
-                todayInfo.toEntity().let { todayEntity ->
-                    todayDao.removeTodayData()
-                    todayDao.insertTodayData(todayEntity)
-                }
-                todayInfo.toUIModel()
+    ): Flow<TodayUIModel> =
+        flow {
+            val result = apiService.getTodayData(lat, lon)
+            result.toEntity().let { todayEntity ->
+                todayDao.removeTodayData()
+                todayDao.insertTodayData(todayEntity)
             }
-            .onErrorResumeNext {
-                todayDao
-                    .getTodayData()
-                    .map { todayEntity -> todayEntity.toUIModel() }
+            emit(result.toUIModel())
+        }
+            .catch {
+                val databaseData =
+                    flowOf(todayDao.getTodayData()).map { todayEntity -> todayEntity.toUIModel() }
+                emitAll(databaseData)
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
 
-    fun getForecastData(lat: String, lon: String): Single<List<ForecastUIModel>> =
-        apiService
-            .getForecastData(lat, lon)
-            .map { forecastList ->
-                forecastList.list.map { forecastInfo -> forecastInfo.toEntityModel() }
-                    .let { forecastEntityList ->
-                        forecastDao.removeForecastData()
-                        forecastDao.insertForecastData(forecastEntityList)
-                    }
-                forecastList.list.fromInfoToUIModelList()
+    fun getForecastData(lat: String, lon: String): Flow<List<ForecastUIModel>> =
+        flow {
+            val result = apiService.getForecastData(lat, lon).list
+            result.map { forecastInfo ->
+                forecastInfo.toEntityModel()
+            }.let { forecastEntityList ->
+                forecastDao.removeForecastData()
+                forecastDao.insertForecastData(forecastEntityList)
             }
-            .onErrorResumeNext {
-                forecastDao
-                    .getForecastData()
-                    .map { forecastEntityList -> forecastEntityList.fromEntityToUIModelList() }
+            emit(result.fromInfoToUIModelList())
+        }
+            .catch {
+                val databaseData =
+                    flowOf(forecastDao.getForecastData())
+                        .map { forecastEntityList -> forecastEntityList.fromEntityToUIModelList() }
+                emitAll(databaseData)
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
 }

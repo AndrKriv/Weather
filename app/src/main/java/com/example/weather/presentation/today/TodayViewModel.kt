@@ -35,16 +35,16 @@ class TodayViewModel @Inject constructor(
         }
     }
 
-    fun getTodayData(lat: String, lon: String) =
-        weatherInteractor
-            .getTodayData(lat, lon)
-            .doOnSubscribe { viewModelScope.launch { _loaderStateFlow.value = true } }
-            .doAfterTerminate { viewModelScope.launch { _loaderStateFlow.value = false } }
-            .subscribe({ currentWeather ->
-                viewModelScope.launch { _todayStateFlow.value = currentWeather }
-            }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
-            .addToDisposable()
-
+    fun getTodayData(lat: String, lon: String) {
+        viewModelScope.launch {
+            weatherInteractor
+                .getTodayData(lat, lon)
+                .onStart { _loaderStateFlow.value = true }
+                .onCompletion { _loaderStateFlow.value = false }
+                .catch { errorMessage -> _errorSharedFlow.emit(errorMessage.message.toString()) }
+                .collect { currentWeather -> _todayStateFlow.value = currentWeather }
+        }
+    }
 
     fun sendInfoChooser(messageText: String): Intent =
         Intent.createChooser(

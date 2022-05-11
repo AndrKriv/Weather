@@ -34,13 +34,14 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-    fun getForecastData(lat: String, lon: String) =
-        weatherInteractor
-            .getForecastData(lat, lon)
-            .doOnSubscribe { viewModelScope.launch { _loaderStateFlow.value = true } }
-            .doAfterTerminate { viewModelScope.launch { _loaderStateFlow.value = false } }
-            .subscribe({ forecastWeather ->
-                viewModelScope.launch { _forecastStateFlow.value = forecastWeather }
-            }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
-            .addToDisposable()
+    fun getForecastData(lat: String, lon: String) {
+        viewModelScope.launch {
+            weatherInteractor
+                .getForecastData(lat, lon)
+                .onStart { _loaderStateFlow.value = true }
+                .onCompletion { _loaderStateFlow.value = false }
+                .catch { errorMessage -> _errorSharedFlow.emit(errorMessage.message.toString()) }
+                .collect { forecastWeather -> _forecastStateFlow.value = forecastWeather }
+        }
+    }
 }
