@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.core.BaseViewModel
 import com.example.weather.domain.interactor.WeatherInteractor
 import com.example.weather.presentation.today.model.TodayUIModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TodayViewModel @Inject constructor(
@@ -37,12 +39,13 @@ class TodayViewModel @Inject constructor(
 
     fun getTodayData(lat: String, lon: String) {
         viewModelScope.launch {
-            weatherInteractor
-                .getTodayData(lat, lon)
-                .onStart { _loaderStateFlow.value = true }
-                .onCompletion { _loaderStateFlow.value = false }
-                .catch { errorMessage -> _errorSharedFlow.emit(errorMessage.message.toString()) }
-                .collect { currentWeather -> _todayStateFlow.value = currentWeather }
+            _loaderStateFlow.value = true
+            withContext(Dispatchers.IO) {
+                try {
+                    _todayStateFlow.value = weatherInteractor.getTodayData(lat, lon)
+                } catch (e: NullPointerException) { _errorSharedFlow.emit("error") }
+            }
+            _loaderStateFlow.value = false
         }
     }
 
