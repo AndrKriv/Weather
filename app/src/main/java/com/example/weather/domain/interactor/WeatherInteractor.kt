@@ -7,10 +7,8 @@ import com.example.weather.data.network.api.ApiService
 import com.example.weather.extension.*
 import com.example.weather.presentation.forecast.model.ForecastUIModel
 import com.example.weather.presentation.today.model.TodayUIModel
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.StateFlow
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 class WeatherInteractor @Inject constructor(
@@ -21,43 +19,26 @@ class WeatherInteractor @Inject constructor(
 ) {
     fun observeNetworkState(): StateFlow<Boolean> = networkStateManager.state
 
-    fun getTodayData(
-        lat: String,
-        lon: String
-    ): Single<TodayUIModel> =
-        apiService
-            .getTodayData(lat, lon)
-            .map { todayInfo ->
-                todayInfo.toEntity().let { todayEntity ->
-                    todayDao.removeTodayData()
-                    todayDao.insertTodayData(todayEntity)
-                }
-                todayInfo.toUIModel()
+    suspend fun getTodayData(lat: String, lon: String): TodayUIModel =
+        try {
+            val todayData = apiService.getTodayData(lat, lon)
+            todayData.toEntity().let { todayEntity ->
+                todayDao.removeTodayData()
+                todayDao.insertTodayData(todayEntity)
             }
-            .onErrorResumeNext {
-                todayDao
-                    .getTodayData()
-                    .map { todayEntity -> todayEntity.toUIModel() }
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            todayData.toUIModel()
+        } catch (e: UnknownHostException) { todayDao.getTodayData().toUIModel() }
 
-    fun getForecastData(lat: String, lon: String): Single<List<ForecastUIModel>> =
-        apiService
-            .getForecastData(lat, lon)
-            .map { forecastList ->
-                forecastList.list.map { forecastInfo -> forecastInfo.toEntityModel() }
-                    .let { forecastEntityList ->
-                        forecastDao.removeForecastData()
-                        forecastDao.insertForecastData(forecastEntityList)
-                    }
-                forecastList.list.fromInfoToUIModelList()
-            }
-            .onErrorResumeNext {
-                forecastDao
-                    .getForecastData()
-                    .map { forecastEntityList -> forecastEntityList.fromEntityToUIModelList() }
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+
+    suspend fun getForecastData(lat: String, lon: String): List<ForecastUIModel> =
+        try {
+            val forecastData = apiService.getForecastData(lat, lon).list
+            forecastData
+                .map { forecastInfo -> forecastInfo.toEntityModel() }
+                .let { forecastEntityList ->
+                    forecastDao.removeForecastData()
+                    forecastDao.insertForecastData(forecastEntityList)
+                }
+            forecastData.fromInfoToUIModelList()
+        } catch (e: UnknownHostException) { forecastDao.getForecastData().fromEntityToUIModelList() }
 }

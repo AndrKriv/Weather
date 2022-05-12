@@ -4,8 +4,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.core.BaseViewModel
 import com.example.weather.domain.interactor.WeatherInteractor
 import com.example.weather.presentation.forecast.model.ForecastUIModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ForecastViewModel @Inject constructor(
@@ -34,13 +36,17 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-    fun getForecastData(lat: String, lon: String) =
-        weatherInteractor
-            .getForecastData(lat, lon)
-            .doOnSubscribe { viewModelScope.launch { _loaderStateFlow.value = true } }
-            .doAfterTerminate { viewModelScope.launch { _loaderStateFlow.value = false } }
-            .subscribe({ forecastWeather ->
-                viewModelScope.launch { _forecastStateFlow.value = forecastWeather }
-            }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
-            .addToDisposable()
+    fun getForecastData(lat: String, lon: String) {
+        viewModelScope.launch {
+            _loaderStateFlow.value = true
+            withContext(Dispatchers.IO) {
+                if (weatherInteractor.getForecastData(lat, lon).isNotEmpty()) {
+                    _forecastStateFlow.value = weatherInteractor.getForecastData(lat, lon)
+                } else {
+                    _errorSharedFlow.emit("error")
+                }
+            }
+            _loaderStateFlow.value = false
+        }
+    }
 }

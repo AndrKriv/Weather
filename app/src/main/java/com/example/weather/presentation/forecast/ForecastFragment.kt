@@ -35,7 +35,7 @@ class ForecastFragment : BaseFragment(R.layout.fragment_forecast) {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             launch {
                 forecastViewModel.forecastStateFlow.collect { forecastUIModel ->
-                        forecastAdapter.setItems(forecastUIModel)
+                    forecastAdapter.setItems(forecastUIModel)
                 }
             }
             launch {

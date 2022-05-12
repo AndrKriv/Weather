@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.core.BaseViewModel
 import com.example.weather.domain.interactor.WeatherInteractor
 import com.example.weather.presentation.today.model.TodayUIModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TodayViewModel @Inject constructor(
@@ -35,16 +37,17 @@ class TodayViewModel @Inject constructor(
         }
     }
 
-    fun getTodayData(lat: String, lon: String) =
-        weatherInteractor
-            .getTodayData(lat, lon)
-            .doOnSubscribe { viewModelScope.launch { _loaderStateFlow.value = true } }
-            .doAfterTerminate { viewModelScope.launch { _loaderStateFlow.value = false } }
-            .subscribe({ currentWeather ->
-                viewModelScope.launch { _todayStateFlow.value = currentWeather }
-            }, { viewModelScope.launch { _errorSharedFlow.emit(it.message.toString()) } })
-            .addToDisposable()
-
+    fun getTodayData(lat: String, lon: String) {
+        viewModelScope.launch {
+            _loaderStateFlow.value = true
+            withContext(Dispatchers.IO) {
+                try {
+                    _todayStateFlow.value = weatherInteractor.getTodayData(lat, lon)
+                } catch (e: NullPointerException) { _errorSharedFlow.emit("error") }
+            }
+            _loaderStateFlow.value = false
+        }
+    }
 
     fun sendInfoChooser(messageText: String): Intent =
         Intent.createChooser(
